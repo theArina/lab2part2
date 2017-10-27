@@ -17,43 +17,41 @@
 
 #include <stdio.h>
 
-struct FullName
-{
-	char name[80];
-	char surname[80];
-	char *patronymic[80];
-};
-struct Date
-{
-	unsigned short day;
-	unsigned short month;
-	unsigned short year;
-};
+//struct Date
+//{
+//	unsigned short day;
+//	unsigned short month;
+//	unsigned short year;
+//};
+//struct Name
+//{
+//	char first_name[80];
+//	char last_name[80];
+//	char *patronymic[80];
+//};
 struct Account 
 {
-	unsigned long long number;
-	long amount;
-	Date changeDate;
+	int test;
+	//int id;
+	//bool is_empty;
+	//unsigned long long account_id;
+	//long fund_sum;
+	//long last_edited;
+	//Date date;
+	//Name name;
 };
-struct Data
+void scanData(Account *f)
 {
-	FullName fullName;
-	Account account;
-};
-void inputData(FullName *fName)
-{
-	int n = 80;
-	fgets(fName->name, n, stdin);
+	scanf("%d please type a nunber: \n",f->test);
 
 }
-void outputData(FullName *)
+void printData(Account *f)
 {
-
-	fputs(fName->name, stdout);
+	printf("%d your number: \n", f->test);
 }
 
 void main()
 {
-	//inputData();
-	outputData();
+	scanData();
+	printData();
 }
