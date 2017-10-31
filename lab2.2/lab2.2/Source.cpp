@@ -30,8 +30,7 @@
 //	char last_name[80];
 //	char *patronymic[80];
 //};
-struct Account 
-{
+typedef struct Account {
 	int test;
 	//int id;
 	//bool is_empty;
@@ -40,20 +39,23 @@ struct Account
 	//long last_edited;
 	//Date date;
 	//Name name;
-}d;
-Account scanData()
+} Account;
+
+void scanData(Account *acc)
 {
-	Account a;
-	scanf("please type a number: %d\n", &a.test);
-	return a;
+	printf("please type a number:\n");
+	scanf("%d", &acc->test);
 }
-void printData(Account a)
+
+void printData(Account *acc)
 {
-	printf("your number: %d\n", a.test);
+	printf("your number: %d\n", acc->test);
 }
 
 void main()
 {
-	d = scanData();
-	printData(d);
+	Account d;
+
+	scanData( &d );
+	printData( &d );
 }
