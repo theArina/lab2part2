@@ -15,6 +15,7 @@
 	(например, общая сумма на всех счетах) - дается индивидуально 
 */
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
 //struct Date
@@ -39,19 +40,20 @@ struct Account
 	//long last_edited;
 	//Date date;
 	//Name name;
-};
-void scanData(Account *f)
+}d;
+Account scanData()
 {
-	scanf("%d please type a nunber: \n",f->test);
-
+	Account a;
+	scanf("please type a number: %d\n", &a.test);
+	return a;
 }
-void printData(Account *f)
+void printData(Account a)
 {
-	printf("%d your number: \n", f->test);
+	printf("your number: %d\n", a.test);
 }
 
 void main()
 {
-	scanData();
-	printData();
+	d = scanData();
+	printData(d);
 }
