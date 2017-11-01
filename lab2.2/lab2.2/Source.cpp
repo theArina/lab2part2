@@ -17,6 +17,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <malloc.h>
 
 //struct Date
 //{
@@ -52,10 +53,30 @@ void printData(Account *acc)
 	printf("your number: %d\n", acc->test);
 }
 
+void menu(Account *t)
+{
+	printf("\t please, write a number to select an option\n\n");
+	printf("\t 1. create new account\n\t 2. show account\n\n");
+	int in = 0;
+	printf("\t ");
+	scanf("%d\n", in);
+
+	switch (in)
+	{
+	case 1:
+		scanData(t);
+		break;
+	case '2':
+		printData(t);
+		break;
+	}
+}
+
 void main()
 {
-	Account d;
+	Account *t = (Account *)malloc(sizeof(Account));
 
-	scanData( &d );
-	printData( &d );
+	menu(t);
+
+	free(t);
 }
