@@ -1,8 +1,8 @@
 /*Лаба 2, часть 2, вариант 2. 
 Фамилия И.О., номер счета, сумма на счете, дата последнего изменения.*/
 /*
-1 - ввод элементов(полей) структуры
-2 - вывод
+1 - ввод элементов(полей) структуры +
+2 - вывод +
 3 - «очистка» структурированных переменных
 4 - поиск свободной структурированной переменной
 5 - поиск в массиве структуры и минимальным значением заданного поля
@@ -42,41 +42,44 @@ typedef struct Account {
 	//Name name;
 } Account;
 
-void scanData(Account *acc)
+void scanData(Account *accounts, int *a)
 {
 	printf("please type a number:\n");
-	scanf("%d", &acc->test);
+	scanf("%d", &accounts->test);
 }
 
-void printData(Account *acc)
+void printData(Account *accounts, int *a)
 {
-	printf("your number: %d\n", acc->test);
+	printf("your number: %d\n", accounts->test);
 }
 
-void menu(Account *t)
+void menu(Account *accounts, int *id)
 {
 	printf("\t please, write a number to select an option\n\n");
 	printf("\t 1. create new account\n\t 2. show account\n\n");
 	int in = 0;
 	printf("\t ");
-	scanf("%d\n", in);
+	scanf("%d\n", &in);
 
 	switch (in)
 	{
 	case 1:
-		scanData(t);
+		scanData(accounts, id);
 		break;
-	case '2':
-		printData(t);
+	case 2:
+		printData(accounts, id);
 		break;
 	}
 }
 
 void main()
 {
-	Account *t = (Account *)malloc(sizeof(Account));
+	int size = 1;
 
-	menu(t);
+	int *id = (int *)malloc(size * sizeof(int));
+	Account *accounts = (Account *)malloc(size * sizeof(Account));
+	menu(accounts, id);
 
-	free(t);
+	free(accounts);
+	free(id);
 }
