@@ -18,6 +18,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <malloc.h>
+#include <windows.h>
 
 //struct Date
 //{
@@ -31,55 +32,75 @@
 //	char last_name[80];
 //	char *patronymic[80];
 //};
-typedef struct Account {
+//void time()
+//{
+//	SYSTEMTIME SystemTime;
+//
+//	GetSystemTime(&SystemTime);
+//	printf("hours : %d\n", SystemTime.wHour);
+//
+//}
+//int id;
+//bool is_empty;
+//unsigned long long account_id;
+//long fund_sum;
+//long last_edited;
+//Date date;
+//Name name;
+//SYTEMTIME last_modified;
+//void menu(Account *accounts, int *id)
+//{
+//	printf("\t please, write a number to select an option\n\n");
+//	printf("\t 1. create new account\n\t 2. show account\n\n");
+//	int in = 0;
+//	printf("\t ");
+//	scanf("%d\n", &in);
+//
+//	switch (in)
+//	{
+//	case 1:
+//		scanData(accounts, id);
+//		break;
+//	case 2:
+//		printData(accounts, id);
+//		break;
+//	}
+//}
+typedef struct Account 
+{
 	int test;
-	//int id;
-	//bool is_empty;
-	//unsigned long long account_id;
-	//long fund_sum;
-	//long last_edited;
-	//Date date;
-	//Name name;
+	
 } Account;
 
-void scanData(Account *accounts, int *a)
+void fillAccounts(Account *accounts, int arraySize)
+{
+	for (int i = 0; i < arraySize; i++)
+		(accounts + i)->test = i;
+}
+
+void scanAccounts(Account *accounts, int id)
 {
 	printf("please type a number:\n");
-	scanf("%d", &accounts->test);
+	scanf("%d", &(accounts+id)->test);
 }
 
-void printData(Account *accounts, int *a)
+void printAccounts(Account *accounts, int arraySize)
 {
-	printf("your number: %d\n", accounts->test);
-}
-
-void menu(Account *accounts, int *id)
-{
-	printf("\t please, write a number to select an option\n\n");
-	printf("\t 1. create new account\n\t 2. show account\n\n");
-	int in = 0;
-	printf("\t ");
-	scanf("%d\n", &in);
-
-	switch (in)
+	for (int i = 0; i < arraySize; i++)
 	{
-	case 1:
-		scanData(accounts, id);
-		break;
-	case 2:
-		printData(accounts, id);
-		break;
+		printf("  %d", &(accounts + i)->test);
 	}
+	printf("\n");	
 }
 
 void main()
 {
-	int size = 1;
+	int arraySize = 10;
+	//int id = 0;
+	Account *accounts = (Account *)malloc(arraySize * sizeof(Account));
 
-	int *id = (int *)malloc(size * sizeof(int));
-	Account *accounts = (Account *)malloc(size * sizeof(Account));
-	menu(accounts, id);
+	fillAccounts(accounts, arraySize);
+	printAccounts(accounts, arraySize);
 
 	free(accounts);
-	free(id);
 }
