@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <malloc.h>
 //#include <windows.h>
+#include <windows.h>
 
 //struct Date
 //{
@@ -105,6 +106,25 @@ void searchFreeVar(Account *accounts, int arraySize)
 		if ((accounts + i)->test == 0)
 			//do actions
 	}
+}
+void fillAccounts(Account *accounts, int arraySize)
+{
+	for (int i = 0; i < arraySize; i++)
+		(accounts + i)->test = i;
+}
+
+void scanAccounts(Account *accounts, int id)
+{
+	printf("please type a number:\n");
+	scanf("%d", &(accounts+id)->test);
+}
+
+void printAccounts(Account *accounts, int id, int arraySize)
+{
+	for (int i = 0; i < arraySize; i++)
+		printf("  %d", &(accounts + i)->test);
+
+	printf("\n");	
 }
 
 void main()
