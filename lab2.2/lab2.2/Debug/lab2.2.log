@@ -1,4 +1,4 @@
 ﻿  Source.cpp
-d:\tom\coding\lab2part2\lab2.2\lab2.2\source.cpp(91): warning C4477: "printf": в строке форматирования "%d" требуется аргумент типа "int", но вариативный аргумент "1" имеет тип "int *"
+d:\tom\coding\lab2part2\lab2.2\lab2.2\source.cpp(84): warning C4477: "scanf": в строке форматирования "%d" требуется аргумент типа "int *", но вариативный аргумент "1" имеет тип "int **"
   lab2.2.vcxproj -> D:\tom\coding\lab2part2\lab2.2\Debug\lab2.2.exe
   lab2.2.vcxproj -> D:\tom\coding\lab2part2\lab2.2\Debug\lab2.2.pdb (Partial PDB)
