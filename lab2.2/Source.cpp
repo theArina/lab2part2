@@ -3,8 +3,8 @@
 /*
 1 - ввод элементов(полей) структуры +
 2 - вывод +
-3 - «очистка» структурированных переменных
-4 - поиск свободной структурированной переменной
+3 - «очистка» структурированных переменных +
+4 - поиск свободной структурированной переменной +
 5 - поиск в массиве структуры и минимальным значением заданного поля
 6 - поиск в массиве структур элемента с заданным значением поля или с наиболее близким к нему по значению
 7 - удаление заданного элемента
@@ -18,125 +18,73 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <malloc.h>
-//#include <windows.h>
 #include <windows.h>
+#include <time.h>
 
-//struct Date
-//{
-//	unsigned short day;
-//	unsigned short month;
-//	unsigned short year;
-//};
-//struct Name
-//{
-//	char first_name[80];
-//	char last_name[80];
-//	char *patronymic[80];
-//};
-//void time()
-//{
-//	SYSTEMTIME SystemTime;
-//
-//	GetSystemTime(&SystemTime);
-//	printf("hours : %d\n", SystemTime.wHour);
-//
-//}
-//int id;
-//bool is_empty;
-//unsigned long long account_id;
-//long fund_sum;
-//long last_edited;
-//Date date;
-//Name name;
-//SYTEMTIME last_modified;
-//void menu(Account *accounts, int *id)
-//{
-//	printf("\t please, write a number to select an option\n\n");
-//	printf("\t 1. create new account\n\t 2. show account\n\n");
-//	int in = 0;
-//	printf("\t ");
-//	scanf("%d\n", &in);
-//
-//	switch (in)
-//	{
-//	case 1:
-//		scanData(accounts, id);
-//		break;
-//	case 2:
-//		printData(accounts, id);
-//		break;
-//	}
-//}
-typedef struct Account 
+typedef struct
 {
 	int test;
 	
 } Account;
 
-void fillAcc(Account *accounts, int arraySize)
+void fillAcc(Account *accounts, int arrSize)
 {
-	for (int i = 0; i < arraySize; i++)
-		(accounts + i)->test = i;
+	for (int i = 0; i < arrSize; i++)
+		(accounts + i)->test = 1+rand()%100;
+}
+
+void printArrayTest(Account *accounts, int arrSize)
+{
+	for (int i = 0; i < arrSize; i++)
+		printf("%d ", (accounts + i)->test);
+	printf("\n\n");
 }
 
 void scanAcc(Account *accounts, int id)
 {
 	printf("please type a number:\n");
-	scanf("%d", &(accounts+id)->test);
+	scanf("%d", &(accounts + id)->test);
 }
 
-void printAcc(Account *accounts, int id, int arraySize)
+void printAcc(Account *accounts, int id)
 {
-	/*for (int i = 0; i < arraySize; i++)
-		printf("  %d", (accounts + i)->test);*/
 	if ((accounts + id)->test != 0)
 		printf("%d \n", (accounts + id)->test);
+	else
+		printf("account with this id doesent exist\n");
 }
 
-void clearingAccVars(Account *accounts, int id, int arraySize)
+void clearingAcc(Account *accounts, int id, int arrSize)
 {
-	if (id < arraySize)
+	if (id < arrSize)
 		(accounts + id)->test = 0;
 }
 
-void searchFreeVar(Account *accounts, int arraySize)
+void searchFreePlace(Account *accounts, int arrSize, int *acc)
 {
-	for (int i = 0; i < arraySize, i++)
-	{
-		if ((accounts + i)->test == 0)
-			//do actions
-	}
-}
-void fillAccounts(Account *accounts, int arraySize)
-{
-	for (int i = 0; i < arraySize; i++)
-		(accounts + i)->test = i;
-}
-
-void scanAccounts(Account *accounts, int id)
-{
-	printf("please type a number:\n");
-	scanf("%d", &(accounts+id)->test);
-}
-
-void printAccounts(Account *accounts, int id, int arraySize)
-{
-	for (int i = 0; i < arraySize; i++)
-		printf("  %d", &(accounts + i)->test);
-
-	printf("\n");	
+	int i;
+	for (i = 0; i < arrSize && (accounts + i)->test != 0; i++); 
+	if ((accounts + i)->test == 0)
+		(accounts + i)->test = *acc;
+	else
+		printf("there is no free places\n");
+	
 }
 
 void main()
 {
-	int arraySize = 100;
+	int arrSize = 20;
 	int id = 0;
-	Account *accounts = (Account *)malloc(arraySize * sizeof(Account));
+	int acc = 1999;
+	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
 	printf("enter id: \n");
 	scanf("%d", &id);
-	fillAcc(accounts, arraySize);
-	printAcc(accounts, id, arraySize);
+
+	fillAcc(accounts, arrSize);
+	printArrayTest(accounts, arrSize);
+	searchFreePlace(accounts, arrSize, &acc);
+	printArrayTest(accounts, arrSize);
 
 	free(accounts);
 }
