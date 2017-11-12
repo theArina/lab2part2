@@ -6,7 +6,7 @@
 3 - «очистка» структурированных переменных +
 4 - поиск свободной структурированной переменной +
 5 - поиск в массиве структуры и минимальным значением заданного поля
-6 - поиск в массиве структур элемента с заданным значением поля или с наиболее близким к нему по значению
+6 - поиск в массиве структур элемента с заданным значением поля или с наиболее близким к нему по значению +-
 7 - удаление заданного элемента
 8 - изменение(редактирование) заданного элемента
 9 - сортировка массива структур в порядке возрастания заданного поля +
@@ -24,7 +24,6 @@
 typedef struct
 {
 	int test;
-	
 } Account;
 
 void fillAcc(Account *accounts, int arrSize)
@@ -71,6 +70,13 @@ void searchFreePlace(Account *accounts, int arrSize, int *acc)
 	
 }
 
+void searchAcc(Account *accounts, int arrSize, int *acc)
+{
+	int i;
+	for (i = 0; i < arrSize && (accounts + i)->test != *acc; i++);
+	i < arrSize? printf("%d\n", *(accounts + i)): printf("no matches\n");
+}
+
 void sortAcc(Account *accounts, int arrsize)
 {
 	bool isSwap;
@@ -96,7 +102,7 @@ void main()
 {
 	int arrSize = 20;
 	int id = 0;
-	int acc = 1999;
+	int acc = 42;
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
 	/*printf("enter id: \n");
@@ -104,8 +110,7 @@ void main()
 
 	fillAcc(accounts, arrSize);
 	printArrayTest(accounts, arrSize);
-	sortAcc(accounts, arrSize);
-	printArrayTest(accounts, arrSize);
+	searchAcc(accounts, arrSize, &acc);
 
 	free(accounts);
 }
