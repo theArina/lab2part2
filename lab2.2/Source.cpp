@@ -21,10 +21,30 @@
 #include <windows.h>
 #include <ctime>
 
+
 typedef struct
 {
+	char first_name[80];
+	char last_name[80];
+	char *patronymic[80];
+
 	int test;
+	bool isEmpty;
+	unsigned long long id;
+	long fundSum;
+	long lasEdited;
+	SYSTEMTIME systemTime;
+
 } Account;
+
+void time()
+{
+	SYSTEMTIME systemTime;
+
+	GetSystemTime(&systemTime);
+	printf("%d\n", systemTime.wYear);
+
+}
 
 void fillAcc(Account *accounts, int arrSize)
 {
@@ -74,7 +94,7 @@ void searchAcc(Account *accounts, int arrSize, int *acc)
 {
 	int i;
 	for (i = 0; i < arrSize && (accounts + i)->test != *acc; i++);
-	i < arrSize? printf("%d\n", *(accounts + i)): printf("no matches\n");
+	i < arrSize? printf("%d\n", ((accounts + i)->test)): printf("no matches\n");
 }
 
 void sortAcc(Account *accounts, int arrsize)
@@ -105,12 +125,10 @@ void main()
 	int acc = 42;
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
-	/*printf("enter id: \n");
-	scanf("%d", &id);*/
-
 	fillAcc(accounts, arrSize);
 	printArrayTest(accounts, arrSize);
-	searchAcc(accounts, arrSize, &acc);
+	//searchAcc(accounts, arrSize, &acc);
+	time();
 
 	free(accounts);
 }
