@@ -21,41 +21,49 @@
 #include <windows.h>
 #include <ctime>
 
-
 typedef struct
 {
-	char first_name[80];
-	char last_name[80];
+	char firstName[80];
+	char lastName[80];
 	char *patronymic[80];
-
-	int test;
 	bool isEmpty;
 	unsigned long long id;
-	long fundSum;
+	unsigned long fundSum;
 	long lasEdited;
 	SYSTEMTIME systemTime;
-
 } Account;
 
 void time()
 {
-	SYSTEMTIME systemTime;
-
-	GetSystemTime(&systemTime);
-	printf("%d\n", systemTime.wYear);
-
+	Account getTime;
+	getTime.systemTime.wMilliseconds = 0;
+	GetSystemTime(&getTime.systemTime);
+	printf("%d\n", getTime.systemTime.wMilliseconds);
 }
 
 void fillAcc(Account *accounts, int arrSize)
 {
+	Account getTime;
+	getTime.systemTime.wMilliseconds = 0;
 	for (int i = 0; i < arrSize; i++)
-		(accounts + i)->test = 1+rand()%100;
+	{
+		(accounts + i)->id = 10000000000000000 + rand() % 10000000000000000000;
+		(accounts + i)->fundSum = 100000 + rand() % 10000000000000;
+		GetSystemTime(&getTime.systemTime);
+		//(accounts + i)->systemTime = getTime.systemTime.wMilliseconds;
+	}
 }
 
 void printArrayTest(Account *accounts, int arrSize)
 {
+	printf("id		sum\n");
 	for (int i = 0; i < arrSize; i++)
-		printf("%d ", (accounts + i)->test);
+	{
+		printf("%d	", (accounts + i)->id);
+		printf("%d	", (accounts + i)->fundSum);
+		printf("%d	", (accounts + i)->systemTime);
+		printf("\n");
+	}
 	printf("\n\n");
 }
 
@@ -120,13 +128,12 @@ void sortAcc(Account *accounts, int arrsize)
 
 void main()
 {
-	int arrSize = 20;
-	int id = 0;
-	int acc = 42;
+	int arrSize = 3;
+
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
-	fillAcc(accounts, arrSize);
-	printArrayTest(accounts, arrSize);
+	//fillAcc(accounts, arrSize);
+	//printArrayTest(accounts, arrSize);
 	//searchAcc(accounts, arrSize, &acc);
 	time();
 
