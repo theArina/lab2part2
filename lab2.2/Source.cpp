@@ -23,59 +23,51 @@
 
 typedef struct
 {
-	char firstName[80];
+	bool isEmpty;
+	int id;
+	int test;
+	
+	/*char firstName[80];
 	char lastName[80];
 	char *patronymic[80];
-	bool isEmpty;
-	unsigned long long id;
+	
+	unsigned long long accNum;
 	unsigned long fundSum;
-	long lasEdited;
-	SYSTEMTIME systemTime;
+	SYSTEMTIME lasEdited;
+*/
 } Account;
-
-void time()
-{
-	Account getTime;
-	getTime.systemTime.wMilliseconds = 0;
-	GetSystemTime(&getTime.systemTime);
-	printf("%d\n", getTime.systemTime.wMilliseconds);
-}
 
 void fillAcc(Account *accounts, int arrSize)
 {
-	Account getTime;
-	getTime.systemTime.wMilliseconds = 0;
 	for (int i = 0; i < arrSize; i++)
 	{
-		(accounts + i)->id = 10000000000000000 + rand() % 10000000000000000000;
-		(accounts + i)->fundSum = 100000 + rand() % 10000000000000;
-		GetSystemTime(&getTime.systemTime);
-		//(accounts + i)->systemTime = getTime.systemTime.wMilliseconds;
+		(accounts + i)->id = i;
+		(accounts + i)->isEmpty = false;
+		(accounts + i)->test = 1 + rand() % 100;
 	}
 }
 
 void printArrayTest(Account *accounts, int arrSize)
 {
-	printf("id		sum\n");
+	printf("id	test\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
 		printf("%d	", (accounts + i)->id);
-		printf("%d	", (accounts + i)->fundSum);
-		printf("%d	", (accounts + i)->systemTime);
+		printf("%d	", (accounts + i)->test);
 		printf("\n");
 	}
-	printf("\n\n");
+	printf("\n");
 }
 
 void scanAcc(Account *accounts, int id)
 {
-	printf("please type a number:\n");
+	printf("please enter a number:\n");
 	scanf("%d", &(accounts + id)->test);
 }
 
 void printAcc(Account *accounts, int id)
 {
-	if ((accounts + id)->test != 0)
+	if ((accounts + id)->isEmpty == false)
 		printf("%d \n", (accounts + id)->test);
 	else
 		printf("account with this id doesent exist\n");
@@ -84,25 +76,47 @@ void printAcc(Account *accounts, int id)
 void clearingAcc(Account *accounts, int id, int arrSize)
 {
 	if (id < arrSize)
-		(accounts + id)->test = 0;
+		(accounts + id)->isEmpty = true;
 }
 
-void searchFreePlace(Account *accounts, int arrSize, int *acc)
+void freePlaceSearch(Account *accounts, Account *acc, int arrSize)
 {
 	int i;
-	for (i = 0; i < arrSize && (accounts + i)->test != 0; i++); 
-	if ((accounts + i)->test == 0)
-		(accounts + i)->test = *acc;
+	for (i = 0; i < arrSize && (accounts + i)->isEmpty == false; i++);
+	if ((accounts + i)->isEmpty == true)
+		(accounts + i)->test = acc->test;
 	else
 		printf("there is no free places\n");
-	
 }
 
-void searchAcc(Account *accounts, int arrSize, int *acc)
+int minSearch(Account *accounts, int arrSize)
+{
+	int min = accounts[0].test;
+	for (int i = 0; i < arrSize; i++)
+	{
+		if (min > (accounts + i)->test)
+			min = (accounts + i)->test;
+	}
+	return min;
+}
+
+void searchAcc(Account *accounts, Account *acc, int arrSize)
 {
 	int i;
-	for (i = 0; i < arrSize && (accounts + i)->test != *acc; i++);
-	i < arrSize? printf("%d\n", ((accounts + i)->test)): printf("no matches\n");
+	for (i = 0; i < arrSize && (accounts + i)->test != acc->test; i++);
+	i < arrSize&& (accounts + i)->test != true?
+		printf("%d\n", ((accounts + i)->id)): 
+		printf("no matches\n");
+}
+
+void deleteElement(Account *accounts, int id)
+{
+	(accounts + id)->test = 0;
+}
+
+void editElement(Account *accounts, int id)
+{
+
 }
 
 void sortAcc(Account *accounts, int arrsize)
@@ -113,11 +127,11 @@ void sortAcc(Account *accounts, int arrsize)
 		int lastSwap = 0;
 		for (int i = 0; i < arrsize - 1; i++)
 		{
-			if ((accounts + i)->test >(accounts + i +1)->test)
+			if ((accounts + i)->test > (accounts + i + 1)->test)
 			{
 				int t = (accounts + i)->test;
-				(accounts + i)->test = (accounts + i+1)->test;
-				(accounts + i+1)->test = t;
+				(accounts + i)->test = (accounts + i + 1)->test;
+				(accounts + i + 1)->test = t;
 				isSwap = true;
 				lastSwap = i + 1;
 			}
@@ -128,14 +142,16 @@ void sortAcc(Account *accounts, int arrsize)
 
 void main()
 {
-	int arrSize = 3;
+	int arrSize = 20;
 
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
-	//fillAcc(accounts, arrSize);
-	//printArrayTest(accounts, arrSize);
-	//searchAcc(accounts, arrSize, &acc);
-	time();
+	Account acc;
+	acc.test = 1;
+	acc.isEmpty = true;
+
+	fillAcc(accounts, arrSize);
+	printArrayTest(accounts, arrSize);
 
 	free(accounts);
 }
