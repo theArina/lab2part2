@@ -76,7 +76,10 @@ void printAcc(Account *accounts, int id)
 void clearingAcc(Account *accounts, int id, int arrSize)
 {
 	if (id < arrSize)
+	{
 		(accounts + id)->isEmpty = true;
+		(accounts + id)->test = 0;
+	}
 }
 
 void freePlaceSearch(Account *accounts, Account *acc, int arrSize)
@@ -100,23 +103,36 @@ int minSearch(Account *accounts, int arrSize)
 	return min;
 }
 
-void searchAcc(Account *accounts, Account *acc, int arrSize)
+Account* searchAcc(Account *accounts, Account *acc, int arrSize)
 {
 	int i;
 	for (i = 0; i < arrSize && (accounts + i)->test != acc->test; i++);
-	i < arrSize&& (accounts + i)->test != true?
-		printf("%d\n", ((accounts + i)->id)): 
-		printf("no matches\n");
+	if (i < arrSize && (accounts + i)->isEmpty == false)
+		return (accounts + i);	
+	else
+	{
+		int minDiff = accounts[0].test;
+		int m = 0;
+		for (i = 0; i < arrSize; i++)
+		{
+			if (abs(acc->test - (accounts + i)->test) < minDiff)
+			{
+				minDiff = (accounts + i)->test;
+				m = i;
+			}
+		}
+		return (accounts + m);
 }
 
-void deleteElement(Account *accounts, int id)
+void removeAcc(Account *accounts, int id)
 {
 	(accounts + id)->test = 0;
 }
 
-void editElement(Account *accounts, int id)
+void editElement(Account *accounts, int id, int arrSize)
 {
-
+	if (id < arrSize)
+		(accounts + id)->isEmpty = true;
 }
 
 void sortAcc(Account *accounts, int arrsize)
@@ -129,9 +145,9 @@ void sortAcc(Account *accounts, int arrsize)
 		{
 			if ((accounts + i)->test > (accounts + i + 1)->test)
 			{
-				int t = (accounts + i)->test;
-				(accounts + i)->test = (accounts + i + 1)->test;
-				(accounts + i + 1)->test = t;
+				Account t = *(accounts + i);
+				*(accounts + i) = *(accounts + i + 1);
+				*(accounts + i + 1) = t;
 				isSwap = true;
 				lastSwap = i + 1;
 			}
@@ -147,11 +163,13 @@ void main()
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
 	Account acc;
-	acc.test = 1;
-	acc.isEmpty = true;
+	acc.test = 6;
+	//acc.isEmpty = true;
 
 	fillAcc(accounts, arrSize);
 	printArrayTest(accounts, arrSize);
+	printf("%d\n", (searchAcc(accounts, &acc, arrSize))->id);
+	//printArrayTest(accounts, arrSize);
 
 	free(accounts);
 }
