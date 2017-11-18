@@ -1,18 +1,18 @@
-//Часть 2, лаба 2, вариант 2. 
-//Фамилия И.О., номер счета, сумма на счете, дата последнего изменения.
+//Р§Р°СЃС‚СЊ 2, Р»Р°Р±Р° 2, РІР°СЂРёР°РЅС‚ 2.
+//Р¤Р°РјРёР»РёСЏ Р.Рћ., РЅРѕРјРµСЂ СЃС‡РµС‚Р°, СЃСѓРјРјР° РЅР° СЃС‡РµС‚Рµ, РґР°С‚Р° РїРѕСЃР»РµРґРЅРµРіРѕ РёР·РјРµРЅРµРЅРёСЏ.
 /*
-1 - ввод элементов(полей) структуры +
-2 - вывод +
-3 - «очистка» структурированных переменных +
-4 - поиск свободной структурированной переменной +
-5 - поиск в массиве структуры и минимальным значением заданного поля
-6 - поиск в массиве структур элемента с заданным значением поля или с наиболее близким к нему по значению +-
-7 - удаление заданного элемента
-8 - изменение(редактирование) заданного элемента
-9 - сортировка массива структур в порядке возрастания заданного поля +
-	(при сортировке можно использовать тот факт, что в Си++ разрешается присваивание структурированных переменных)
-10 - вычисление с проверкой и использованием всех элементов массива по заданному условию и формуле
-	(например, общая сумма на всех счетах) - дается индивидуально 
+1 - РІРІРѕРґ СЌР»РµРјРµРЅС‚РѕРІ(РїРѕР»РµР№) СЃС‚СЂСѓРєС‚СѓСЂС‹ +
+2 - РІС‹РІРѕРґ +
+3 - В«РѕС‡РёСЃС‚РєР°В» СЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С… +
+4 - РїРѕРёСЃРє СЃРІРѕР±РѕРґРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ +
+5 - РїРѕРёСЃРє РІ РјР°СЃСЃРёРІРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ Рё РјРёРЅРёРјР°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј Р·Р°РґР°РЅРЅРѕРіРѕ РїРѕР»СЏ
+6 - РїРѕРёСЃРє РІ РјР°СЃСЃРёРІРµ СЃС‚СЂСѓРєС‚СѓСЂ СЌР»РµРјРµРЅС‚Р° СЃ Р·Р°РґР°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј РїРѕР»СЏ РёР»Рё СЃ РЅР°РёР±РѕР»РµРµ Р±Р»РёР·РєРёРј Рє РЅРµРјСѓ РїРѕ Р·РЅР°С‡РµРЅРёСЋ +-
+7 - СѓРґР°Р»РµРЅРёРµ Р·Р°РґР°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
+8 - РёР·РјРµРЅРµРЅРёРµ(СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ) Р·Р°РґР°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
+9 - СЃРѕСЂС‚РёСЂРѕРІРєР° РјР°СЃСЃРёРІР° СЃС‚СЂСѓРєС‚СѓСЂ РІ РїРѕСЂСЏРґРєРµ РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ Р·Р°РґР°РЅРЅРѕРіРѕ РїРѕР»СЏ +
+	(РїСЂРё СЃРѕСЂС‚РёСЂРѕРІРєРµ РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕС‚ С„Р°РєС‚, С‡С‚Рѕ РІ РЎРё++ СЂР°Р·СЂРµС€Р°РµС‚СЃСЏ РїСЂРёСЃРІР°РёРІР°РЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…)
+10 - РІС‹С‡РёСЃР»РµРЅРёРµ СЃ РїСЂРѕРІРµСЂРєРѕР№ Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ РјР°СЃСЃРёРІР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ СѓСЃР»РѕРІРёСЋ Рё С„РѕСЂРјСѓР»Рµ
+	(РЅР°РїСЂРёРјРµСЂ, РѕР±С‰Р°СЏ СЃСѓРјРјР° РЅР° РІСЃРµС… СЃС‡РµС‚Р°С…) - РґР°РµС‚СЃСЏ РёРЅРґРёРІРёРґСѓР°Р»СЊРЅРѕ
 */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -26,18 +26,18 @@ typedef struct
 	bool isEmpty;
 	int id;
 	int test;
-	
+
 	/*char firstName[80];
 	char lastName[80];
 	char *patronymic[80];
-	
+
 	unsigned long long accNum;
 	unsigned long fundSum;
 	SYSTEMTIME lasEdited;
 */
 } Account;
 
-void fillAcc(Account *accounts, int arrSize)
+void fillAccs(Account *accounts, int arrSize)
 {
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -47,7 +47,7 @@ void fillAcc(Account *accounts, int arrSize)
 	}
 }
 
-void printArrayTest(Account *accounts, int arrSize)
+void printAccs(Account *accounts, int arrSize)
 {
 	printf("id	test\n\n");
 	for (int i = 0; i < arrSize; i++)
@@ -73,34 +73,35 @@ void printAcc(Account *accounts, int id)
 		printf("account with this id doesent exist\n");
 }
 
-void clearingAcc(Account *accounts, int id, int arrSize)
+void clearingAcc(Account *accounts, int id)
 {
-	if (id < arrSize)
-	{
 		(accounts + id)->isEmpty = true;
 		(accounts + id)->test = 0;
-	}
 }
 
-void freePlaceSearch(Account *accounts, Account *acc, int arrSize)
+Account* searchEmptyAcc(Account *accounts, Account *acc, int arrSize)
 {
 	int i;
 	for (i = 0; i < arrSize && (accounts + i)->isEmpty == false; i++);
 	if ((accounts + i)->isEmpty == true)
-		(accounts + i)->test = acc->test;
+		return (accounts + i);
 	else
-		printf("there is no free places\n");
+		return NULL;
 }
-
-int minSearch(Account *accounts, int arrSize)
+//realloc
+Account* searchMinValue(Account *accounts, int arrSize)
 {
 	int min = accounts[0].test;
+	int m = 0;
 	for (int i = 0; i < arrSize; i++)
 	{
 		if (min > (accounts + i)->test)
+		{
 			min = (accounts + i)->test;
+			m = i;
+		}
 	}
-	return min;
+	return (accounts + m);
 }
 
 Account* searchAcc(Account *accounts, Account *acc, int arrSize)
@@ -108,34 +109,34 @@ Account* searchAcc(Account *accounts, Account *acc, int arrSize)
 	int i;
 	for (i = 0; i < arrSize && (accounts + i)->test != acc->test; i++);
 	if (i < arrSize && (accounts + i)->isEmpty == false)
-		return (accounts + i);	
+		return (accounts + i);
 	else
 	{
-		int minDiff = accounts[0].test;
+		int minDiff = abs(acc->test - (accounts + 0)->test);
 		int m = 0;
 		for (i = 0; i < arrSize; i++)
 		{
 			if (abs(acc->test - (accounts + i)->test) < minDiff)
 			{
-				minDiff = (accounts + i)->test;
+				minDiff = abs(acc->test - (accounts + i)->test);
 				m = i;
 			}
 		}
 		return (accounts + m);
+	}
 }
 
 void removeAcc(Account *accounts, int id)
 {
-	(accounts + id)->test = 0;
+	(accounts + id)->isEmpty = true;
 }
 
-void editElement(Account *accounts, int id, int arrSize)
+void editAcc(Account *accounts, int id)
 {
-	if (id < arrSize)
-		(accounts + id)->isEmpty = true;
+	
 }
 
-void sortAcc(Account *accounts, int arrsize)
+void sortAccs(Account *accounts, int arrsize)
 {
 	bool isSwap;
 	do {
@@ -158,18 +159,19 @@ void sortAcc(Account *accounts, int arrsize)
 
 void main()
 {
-	int arrSize = 20;
+	int arrSize = 10;
 
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
 	Account acc;
-	acc.test = 6;
-	//acc.isEmpty = true;
+	acc.test = 100;
 
-	fillAcc(accounts, arrSize);
-	printArrayTest(accounts, arrSize);
-	printf("%d\n", (searchAcc(accounts, &acc, arrSize))->id);
-	//printArrayTest(accounts, arrSize);
+	fillAccs(accounts, arrSize);
+	printAccs(accounts, arrSize);
+
+	printf("%d	", (searchMinValue(accounts, arrSize)->id));
+	printf("%d\n", (searchMinValue(accounts, arrSize)->test));
+	//printf("%d\n", (searchAcc(accounts, &acc, arrSize))->id);
 
 	free(accounts);
 }
