@@ -79,16 +79,21 @@ void clearingAcc(Account *accounts, int id)
 		(accounts + id)->test = 0;
 }
 
-Account* searchEmptyAcc(Account *accounts, Account *acc, int arrSize)
+Account* searchEmptyAcc(Account *accounts, int *arrSize)
 {
 	int i;
-	for (i = 0; i < arrSize && (accounts + i)->isEmpty == false; i++);
+	for (i = 0; i < *arrSize && (accounts + i)->isEmpty == false; i++);
 	if ((accounts + i)->isEmpty == true)
 		return (accounts + i);
 	else
-		return NULL;
+	{
+		accounts = (Account *)realloc((accounts), (*arrSize + 1) * sizeof(Account));
+		(accounts + *arrSize)->id = *arrSize;
+		*arrSize++;
+		return (accounts + i);
+	}
 }
-//realloc
+
 Account* searchMinValue(Account *accounts, int arrSize)
 {
 	int min = accounts[0].test;
@@ -169,9 +174,8 @@ void main()
 	fillAccs(accounts, arrSize);
 	printAccs(accounts, arrSize);
 
-	printf("%d	", (searchMinValue(accounts, arrSize)->id));
-	printf("%d\n", (searchMinValue(accounts, arrSize)->test));
-	//printf("%d\n", (searchAcc(accounts, &acc, arrSize))->id);
+	searchEmptyAcc(accounts, &arrSize)->test = 999;
+	printAccs(accounts, arrSize);
 
 	free(accounts);
 }
