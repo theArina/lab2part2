@@ -146,14 +146,10 @@ Account *searchEmptyAcc(Account **accounts, int *arrSize)
 			return (*accounts + i);
 		}
 		else
-		{
 			return NULL;
-		}
 	}
 	else
-	{
 		return (*accounts + i);
-	}
 }
 
 Account *searchMinValue(Account *accounts, int arrSize)
@@ -290,6 +286,8 @@ int main(int argc, char **argv)
 	int arrSize = 10;
 
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
+	if (!accounts)
+		return NULL;
 
 	Account acc;
 	acc.test = 100;
