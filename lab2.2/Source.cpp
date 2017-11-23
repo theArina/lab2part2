@@ -20,6 +20,20 @@
 #include <malloc.h>
 #include <windows.h>
 #include <ctime>
+#include <limits.h>
+#include <stdbool.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
+
+typedef enum {
+	ID,
+	TEST,
+
+	ACC_FIELD_NUM
+} AccFileds;
 
 typedef struct
 {
@@ -39,6 +53,9 @@ typedef struct
 
 void fillAccs(Account *accounts, int arrSize)
 {
+	assert(accounts != NULL);
+	assert(arrSize > 0);
+
 	for (int i = 0; i < arrSize; i++)
 	{
 		(accounts + i)->id = i;
@@ -49,6 +66,9 @@ void fillAccs(Account *accounts, int arrSize)
 
 void printAccs(Account *accounts, int arrSize)
 {
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0);
+
 	printf("id	test\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -59,110 +79,213 @@ void printAccs(Account *accounts, int arrSize)
 	printf("\n");
 }
 
-void scanAcc(Account *accounts, int id)
+Account *scanAcc(Account *accounts, int arrSize, int id)
 {
-	printf("please enter a number:\n");
-	scanf("%d", &(accounts + id)->test);
-}
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0);
 
-void printAcc(Account *accounts, int id)
-{
-	if ((accounts + id)->isEmpty == false)
-		printf("%d \n", (accounts + id)->test);
-	else
-		printf("account with this id doesent exist\n");
-}
-
-void clearingAcc(Account *accounts, int id)
-{
-		(accounts + id)->isEmpty = true;
-		(accounts + id)->test = 0;
-}
-
-Account* searchEmptyAcc(Account *accounts, int *arrSize)
-{
-	int i;
-	for (i = 0; i < *arrSize && (accounts + i)->isEmpty == false; i++);
-	if ((accounts + i)->isEmpty == true)
-		return (accounts + i);
-	else
+	for (int i = 0; i < arrSize; i++)
 	{
-		accounts = (Account *)realloc((accounts), (*arrSize + 1) * sizeof(Account));
-		(accounts + *arrSize)->id = *arrSize;
-		*arrSize++;
-		return (accounts + i);
+		if ((accounts + i)->id == id)
+		{
+			printf("please enter a number:\n");
+			scanf("%d", &((accounts + i)->test));
+			return accounts + i;
+		}
+	}
+
+	return NULL;
+}
+
+void printAcc(Account *accounts, int arrSize, int id)
+{
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0);
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if ((accounts + i)->id == id)
+		{
+			if ((accounts + i)->isEmpty == false)
+				printf("%d \n", (accounts + i)->test);
+		}
+	}
+
+	printf("account with this id doesent exist\n");
+}
+
+void clearAcc(Account *accounts, int arrSize, int id)
+{
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0); 
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if ((accounts + i)->id == id)
+		{
+			(accounts + id)->test = 0;
+		}
 	}
 }
 
-Account* searchMinValue(Account *accounts, int arrSize)
+Account *searchEmptyAcc(Account **accounts, int *arrSize)
 {
-	int min = accounts[0].test;
-	int m = 0;
+	int i;
+	Account *mAccounts = *accounts;
+
+	for (i = 0; i < *arrSize && (mAccounts + i)->isEmpty == false; i++);
+
+	if (i >= *arrSize)
+	{
+		mAccounts = (Account *)realloc(mAccounts, (*arrSize + 1) * sizeof(Account));
+		if (mAccounts)
+		{
+			(mAccounts + *arrSize)->id = *arrSize;                                                                 
+			++*arrSize;                                                                                      
+			*accounts = mAccounts;
+			return (*accounts + i);
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	else
+	{
+		return (*accounts + i);
+	}
+}
+
+Account *searchMinValue(Account *accounts, int arrSize)
+{
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0); 
+
+	int min = INT_MAX, index=0;
 	for (int i = 0; i < arrSize; i++)
 	{
 		if (min > (accounts + i)->test)
 		{
 			min = (accounts + i)->test;
-			m = i;
+			index = i;
 		}
 	}
-	return (accounts + m);
+	return (accounts + index);
 }
 
-Account* searchAcc(Account *accounts, Account *acc, int arrSize)
+Account *searchAccBy(Account *accounts, int arrSize, Account *acc, AccFileds field, bool checkEmpty)
 {
-	int i;
-	for (i = 0; i < arrSize && (accounts + i)->test != acc->test; i++);
-	if (i < arrSize && (accounts + i)->isEmpty == false)
-		return (accounts + i);
-	else
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0); 
+	assert(field >= 0 && field < ACC_FIELD_NUM);
+
+	int minDiff = INT_MAX, diff = 0;                                                                          
+	int index;   
+
+	for (int i = 0; i < arrSize; i++)
 	{
-		int minDiff = abs(acc->test - (accounts + 0)->test);
-		int m = 0;
-		for (i = 0; i < arrSize; i++)
+		if (!(accounts + i)->isEmpty || checkEmpty)
 		{
-			if (abs(acc->test - (accounts + i)->test) < minDiff)
+			switch (field)
 			{
-				minDiff = abs(acc->test - (accounts + i)->test);
-				m = i;
+				case ID:
+					if ((accounts + i)->id == acc->id)
+						return accounts + i;
+				case TEST:
+					if ((accounts + i)->test == acc->test)
+						return accounts + i;
+				default:
+					break;
 			}
 		}
-		return (accounts + m);
+	}
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if (!(accounts + i)->isEmpty || checkEmpty)
+		{
+			switch (field)
+			{
+				case ID:
+					diff = DIFF(acc->id, (accounts + i)->id);
+					if (diff < minDiff)
+					{
+						minDiff = diff;
+						index = i;
+					}
+					break;
+				case TEST:
+					diff = DIFF(acc->test, (accounts + i)->test);
+					if (diff < minDiff)
+					{
+						minDiff = diff;
+						index = i;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	return (accounts + index);
+}
+
+void removeAcc(Account *accounts, int arrSize, int id)
+{
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0);
+
+	for (int i = 0; i < arrSize; i++)
+		if ((accounts + i)->id == id)
+			(accounts + i)->isEmpty = true;
+}
+
+void updateAcc(Account *accounts, int arrSize, Account *acc)
+{
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0);
+
+	for (int i = 0; i < arrSize; i++)
+		if ((accounts + i)->id == acc->id)
+			memcpy(accounts + i, acc, sizeof(Account));
+}
+
+void sortAccs(Account *accounts, int arrSize, AccFileds field)
+{
+	assert(accounts != NULL);                                                                                     
+	assert(arrSize > 0);   
+
+	for (int i = 0; i < arrSize - 1; i++)      
+	{
+		for (int j = 0; j < arrSize - 1 - i; j++)
+		{
+			bool needSwap = false;
+			switch (field)
+			{
+				case ID:
+					if (accounts[j].id > accounts[j+1].id)
+						needSwap = true;
+					break;
+				case TEST:
+					if (accounts[j].test > accounts[j+1].test)
+						needSwap = true;
+					break;
+				default:
+					break;
+			}
+
+			if (needSwap)
+			{
+				Account temp;
+				memcpy(&temp, accounts + j + 1, sizeof(Account));
+				memcpy(accounts + j + 1, accounts + j, sizeof(Account));
+				memcpy(accounts + j, &temp, sizeof(Account));
+			}
+		}
 	}
 }
 
-void removeAcc(Account *accounts, int id)
-{
-	(accounts + id)->isEmpty = true;
-}
-
-void editAcc(Account *accounts, int id)
-{
-	
-}
-
-void sortAccs(Account *accounts, int arrsize)
-{
-	bool isSwap;
-	do {
-		isSwap = false;
-		int lastSwap = 0;
-		for (int i = 0; i < arrsize - 1; i++)
-		{
-			if ((accounts + i)->test > (accounts + i + 1)->test)
-			{
-				Account t = *(accounts + i);
-				*(accounts + i) = *(accounts + i + 1);
-				*(accounts + i + 1) = t;
-				isSwap = true;
-				lastSwap = i + 1;
-			}
-		}
-		arrsize = lastSwap;
-	} while (isSwap);
-}
-
-void main()
+int main(int argc, char **argv)
 {
 	int arrSize = 10;
 
@@ -171,10 +294,37 @@ void main()
 	Account acc;
 	acc.test = 100;
 
+	printf("Filling accounts ... ");
 	fillAccs(accounts, arrSize);
+	printf("Ok\n");
+
 	printAccs(accounts, arrSize);
 
-	searchEmptyAcc(accounts, &arrSize)->test = 999;
+	printf("Sorting accounts by test ... ");
+	sortAccs(accounts, arrSize, TEST);
+	printf("Ok\n");
+	printAccs(accounts, arrSize);
+
+	printf("Searching empty account ... ");
+	Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
+
+	if (emptyAcc == NULL)
+	{
+		printf("Failed\n");
+		return 1;
+	}
+
+	printf("Ok, new size is %d\n", arrSize);
+
+	emptyAcc->test = 999;
+	printAccs(accounts, arrSize);
+
+	printf("Updating test to %d in account with id %d ... ", 888, 0);
+	Account accToUpdate;
+	accToUpdate.id = 0;
+	accToUpdate.test = 888;
+	updateAcc(accounts, arrSize, &accToUpdate);
+	printf("Ok\n");
 	printAccs(accounts, arrSize);
 
 	free(accounts);
