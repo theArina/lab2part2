@@ -17,23 +17,11 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <malloc.h>
-#include <windows.h>
-#include <ctime>
-#include <limits.h>
-#include <stdbool.h>
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <windows.h>
+//#include <malloc.h>
 
 #define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
-
-typedef enum {
-	ID,
-	TEST,
-
-	ACC_FIELD_NUM
-} AccFileds;
 
 typedef struct
 {
@@ -47,8 +35,8 @@ typedef struct
 
 	unsigned long long accNum;
 	unsigned long fundSum;
-	SYSTEMTIME lasEdited;
-*/
+	SYSTEMTIME lasEdited;*/
+
 } Account;
 
 void fillAccs(Account *accounts, int arrSize)
@@ -152,28 +140,30 @@ Account *searchEmptyAcc(Account **accounts, int *arrSize)
 		return (*accounts + i);
 }
 
-Account *searchMinValue(Account *accounts, int arrSize)
+Account *searchMinValue(Account *accounts, int fieldShift, int fieldSize, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
 
-	int min = INT_MAX, index=0;
-	for (int i = 0; i < arrSize; i++)
+	int min = INT_MAX, index = 0;
+	void *pMin = &min;
+	for (int i = 0, ret = 0; i < arrSize; i++)
 	{
-		if (min > (accounts + i)->test)
+		ret = memcmp(((accounts + i) + fieldShift), pMin, fieldSize);
+		if (ret < 0)
 		{
-			min = (accounts + i)->test;
+			pMin = ((accounts + i) + fieldShift);
 			index = i;
 		}
 	}
 	return (accounts + index);
 }
 
-Account *searchAccBy(Account *accounts, int arrSize, Account *acc, AccFileds field, bool checkEmpty)
+Account *searchAccBy(Account *accounts, Account *acc, bool checkEmpty, int fieldShift, int fieldSize, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
-	assert(field >= 0 && field < ACC_FIELD_NUM);
+	//assert(field >= 0 && field < ACC_FIELD_NUM);
 
 	int minDiff = INT_MAX, diff = 0;                                                                          
 	int index;   
@@ -182,17 +172,9 @@ Account *searchAccBy(Account *accounts, int arrSize, Account *acc, AccFileds fie
 	{
 		if (!(accounts + i)->isEmpty || checkEmpty)
 		{
-			switch (field)
-			{
-				case ID:
-					if ((accounts + i)->id == acc->id)
-						return accounts + i;
-				case TEST:
-					if ((accounts + i)->test == acc->test)
-						return accounts + i;
-				default:
-					break;
-			}
+			int ret = memcmp(((accounts + i) + fieldShift), ((acc + fieldShift)), fieldSize);
+			if (ret == 0)
+				return accounts + i;
 		}
 	}
 
@@ -200,26 +182,11 @@ Account *searchAccBy(Account *accounts, int arrSize, Account *acc, AccFileds fie
 	{
 		if (!(accounts + i)->isEmpty || checkEmpty)
 		{
-			switch (field)
+			diff = DIFF(acc->id, (accounts + i)->id);
+			if (diff < minDiff)
 			{
-				case ID:
-					diff = DIFF(acc->id, (accounts + i)->id);
-					if (diff < minDiff)
-					{
-						minDiff = diff;
-						index = i;
-					}
-					break;
-				case TEST:
-					diff = DIFF(acc->test, (accounts + i)->test);
-					if (diff < minDiff)
-					{
-						minDiff = diff;
-						index = i;
-					}
-					break;
-				default:
-					break;
+				minDiff = diff;
+				index = i;
 			}
 		}
 	}
@@ -246,29 +213,19 @@ void updateAcc(Account *accounts, int arrSize, Account *acc)
 			memcpy(accounts + i, acc, sizeof(Account));
 }
 
-void sortAccs(Account *accounts, int arrSize, AccFileds field)
+void sortAccs(Account *accounts, int fieldShift, int fieldSize, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);   
 
 	for (int i = 0; i < arrSize - 1; i++)      
 	{
-		for (int j = 0; j < arrSize - 1 - i; j++)
+		for (int j = 0, ret = 0; j < arrSize - 1 - i; j++)
 		{
 			bool needSwap = false;
-			switch (field)
-			{
-				case ID:
-					if (accounts[j].id > accounts[j+1].id)
-						needSwap = true;
-					break;
-				case TEST:
-					if (accounts[j].test > accounts[j+1].test)
-						needSwap = true;
-					break;
-				default:
-					break;
-			}
+			ret = memcmp(((accounts + j) + fieldShift), ((accounts + j + 1) + fieldShift), fieldSize);
+			if (ret > 0)
+				needSwap = true;
 
 			if (needSwap)
 			{
@@ -286,8 +243,6 @@ int main(int argc, char **argv)
 	int arrSize = 10;
 
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
-	if (!accounts)
-		return NULL;
 
 	Account acc;
 	acc.test = 100;
@@ -297,33 +252,35 @@ int main(int argc, char **argv)
 	printf("Ok\n");
 
 	printAccs(accounts, arrSize);
+	
+	//printf("Min number is  %d\n", searchMinValue(accounts, sizeof(int)+ sizeof(bool), sizeof(int), arrSize)->test);
 
 	printf("Sorting accounts by test ... ");
-	sortAccs(accounts, arrSize, TEST);
+	sortAccs(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize);
 	printf("Ok\n");
 	printAccs(accounts, arrSize);
 
-	printf("Searching empty account ... ");
-	Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
+	//printf("Searching empty account ... ");
+	//Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
 
-	if (emptyAcc == NULL)
-	{
-		printf("Failed\n");
-		return 1;
-	}
+	//if (emptyAcc == NULL)
+	//{
+	//	printf("Failed\n");
+	//	return 1;
+	//}
 
-	printf("Ok, new size is %d\n", arrSize);
+	//printf("Ok, new size is %d\n", arrSize);
 
-	emptyAcc->test = 999;
-	printAccs(accounts, arrSize);
+	//emptyAcc->test = 999;
+	//printAccs(accounts, arrSize);
 
-	printf("Updating test to %d in account with id %d ... ", 888, 0);
-	Account accToUpdate;
-	accToUpdate.id = 0;
-	accToUpdate.test = 888;
-	updateAcc(accounts, arrSize, &accToUpdate);
-	printf("Ok\n");
-	printAccs(accounts, arrSize);
+	//printf("Updating test to %d in account with id %d ... ", 888, 0);
+	//Account accToUpdate;
+	//accToUpdate.id = 0;
+	//accToUpdate.test = 888;
+	//updateAcc(accounts, arrSize, &accToUpdate);
+	//printf("Ok\n");
+	//printAccs(accounts, arrSize);
 
 	free(accounts);
 }
