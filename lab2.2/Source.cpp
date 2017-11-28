@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <windows.h>
-//#include <malloc.h>
 
 #define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
 
@@ -145,14 +144,16 @@ Account *searchMinValue(Account *accounts, int fieldShift, int fieldSize, int ar
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
 
-	int min = INT_MAX, index = 0;
-	void *pMin = &min;
+	int index = 0;
+	unsigned long long buffer[256];
+	void *min = memset((void*)buffer, 0xff, 256);
+	
 	for (int i = 0, ret = 0; i < arrSize; i++)
 	{
-		ret = memcmp(((accounts + i) + fieldShift), pMin, fieldSize);
+		ret = memcmp(accounts + i + fieldShift, min, fieldSize);
 		if (ret < 0)
 		{
-			pMin = ((accounts + i) + fieldShift);
+			memcpy(min, accounts + i + fieldShift, fieldSize);
 			index = i;
 		}
 	}
@@ -172,7 +173,7 @@ Account *searchAccBy(Account *accounts, Account *acc, bool checkEmpty, int field
 	{
 		if (!(accounts + i)->isEmpty || checkEmpty)
 		{
-			int ret = memcmp(((accounts + i) + fieldShift), ((acc + fieldShift)), fieldSize);
+			int ret = memcmp(accounts + i + fieldShift, acc + fieldShift, fieldSize);
 			if (ret == 0)
 				return accounts + i;
 		}
@@ -223,7 +224,7 @@ void sortAccs(Account *accounts, int fieldShift, int fieldSize, int arrSize)
 		for (int j = 0, ret = 0; j < arrSize - 1 - i; j++)
 		{
 			bool needSwap = false;
-			ret = memcmp(((accounts + j) + fieldShift), ((accounts + j + 1) + fieldShift), fieldSize);
+			ret = memcmp(accounts + j + fieldShift, accounts + j + 1 + fieldShift, fieldSize);
 			if (ret > 0)
 				needSwap = true;
 
@@ -253,12 +254,12 @@ int main(int argc, char **argv)
 
 	printAccs(accounts, arrSize);
 	
-	//printf("Min number is  %d\n", searchMinValue(accounts, sizeof(int)+ sizeof(bool), sizeof(int), arrSize)->test);
+	printf("Min number is  %d\n", searchMinValue(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize)->test);
 
-	printf("Sorting accounts by test ... ");
+	/*printf("Sorting accounts by test ... ");
 	sortAccs(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize);
 	printf("Ok\n");
-	printAccs(accounts, arrSize);
+	printAccs(accounts, arrSize);*/
 
 	//printf("Searching empty account ... ");
 	//Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
