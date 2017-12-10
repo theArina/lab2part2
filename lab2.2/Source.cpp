@@ -11,8 +11,6 @@
 8 - изменение(редактирование) заданного элемента
 9 - сортировка массива структур в порядке возрастания заданного поля +
 	(при сортировке можно использовать тот факт, что в Си++ разрешается присваивание структурированных переменных)
-10 - вычисление с проверкой и использованием всех элементов массива по заданному условию и формуле
-	(например, общая сумма на всех счетах) - дается индивидуально
 */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -27,14 +25,15 @@ typedef struct
 	bool isEmpty;
 	int id;
 	int test;
-
-	/*char firstName[80];
-	char lastName[80];
-	char *patronymic[80];
-
+	/*
 	unsigned long long accNum;
 	unsigned long fundSum;
-	SYSTEMTIME lasEdited;*/
+	SYSTEMTIME lasEdited;
+	
+	char firstName[80];
+	char lastName[80];
+	char *patronymic[80];
+	*/
 
 } Account;
 
@@ -145,44 +144,53 @@ Account *searchMinValue(Account *accounts, int fieldShift, int fieldSize, int ar
 	assert(arrSize > 0); 
 
 	int index = 0;
-	unsigned long long buffer[256];
-	void *min = memset((void*)buffer, 0xff, 256);
+	byte buffer[256];
+	memset(buffer, 0xff, 256);
+	void *min = buffer;
 	
 	for (int i = 0, ret = 0; i < arrSize; i++)
 	{
-		ret = memcmp(accounts + i + fieldShift, min, fieldSize);
+		ret = memcmp(&(accounts + i)->isEmpty + fieldShift, min, fieldSize);
 		if (ret < 0)
 		{
-			memcpy(min, accounts + i + fieldShift, fieldSize);
+			memcpy(min, &(accounts + i)->isEmpty + fieldShift, fieldSize);
 			index = i;
 		}
 	}
 	return (accounts + index);
 }
 
-Account *searchAccBy(Account *accounts, Account *acc, bool checkEmpty, int fieldShift, int fieldSize, int arrSize)
+Account *searchAccBy(Account *accounts, Account *acc, int fieldShift, int fieldSize, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
-	//assert(field >= 0 && field < ACC_FIELD_NUM);
 
-	int minDiff = INT_MAX, diff = 0;                                                                          
-	int index;   
+	byte buffer[256];
+	memset(buffer, 0xff, 256);
+	void* minDiff = buffer;                                                                          
+	int index = 0, diff = 0;
 
-	for (int i = 0; i < arrSize; i++)
+	for (int i = 0, int ret; i < arrSize; i++)
 	{
-		if (!(accounts + i)->isEmpty || checkEmpty)
+		if (!(accounts + i)->isEmpty)
 		{
-			int ret = memcmp(accounts + i + fieldShift, acc + fieldShift, fieldSize);
+			ret = memcmp(&(accounts + i)->isEmpty + fieldShift, &acc->isEmpty + fieldShift, fieldSize);
 			if (ret == 0)
 				return accounts + i;
 		}
 	}
 
-	for (int i = 0; i < arrSize; i++)
+	if (fieldShift > sizeof(int) + sizeof(bool) + sizeof(int))
 	{
-		if (!(accounts + i)->isEmpty || checkEmpty)
+		
+		return 0;
+	}
+
+	/*for (int i = 0, int ret; i < arrSize; i++)
+	{
+		if (!(accounts + i)->isEmpty)
 		{
+
 			diff = DIFF(acc->id, (accounts + i)->id);
 			if (diff < minDiff)
 			{
@@ -191,7 +199,7 @@ Account *searchAccBy(Account *accounts, Account *acc, bool checkEmpty, int field
 			}
 		}
 	}
-	return (accounts + index);
+	return (accounts + index);*/
 }
 
 void removeAcc(Account *accounts, int arrSize, int id)
@@ -224,7 +232,7 @@ void sortAccs(Account *accounts, int fieldShift, int fieldSize, int arrSize)
 		for (int j = 0, ret = 0; j < arrSize - 1 - i; j++)
 		{
 			bool needSwap = false;
-			ret = memcmp(accounts + j + fieldShift, accounts + j + 1 + fieldShift, fieldSize);
+			ret = memcmp(&(accounts + j)->isEmpty + fieldShift, &(accounts + j + 1)->isEmpty + fieldShift, fieldSize);
 			if (ret > 0)
 				needSwap = true;
 
@@ -254,12 +262,17 @@ int main(int argc, char **argv)
 
 	printAccs(accounts, arrSize);
 	
-	printf("Min number is  %d\n", searchMinValue(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize)->test);
+	//printf("Min number is  %d\n", searchMinValue(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize)->test);
 
-	/*printf("Sorting accounts by test ... ");
-	sortAccs(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize);
-	printf("Ok\n");
-	printAccs(accounts, arrSize);*/
+	//printf("Sorting accounts by test ... ");
+	//sortAccs(accounts, sizeof(int) + sizeof(bool), sizeof(int), arrSize);
+	//printf("Ok\n");
+	//printAccs(accounts, arrSize);
+
+	if (searchAccBy(accounts, &acc, sizeof(int) + sizeof(bool), sizeof(int), arrSize) != 0)
+			printf("%d\n", searchAccBy(accounts, &acc, sizeof(int) + sizeof(bool), sizeof(int), arrSize)->id);
+	else
+		printf("there is no matches\n");
 
 	//printf("Searching empty account ... ");
 	//Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
