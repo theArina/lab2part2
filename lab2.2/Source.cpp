@@ -18,12 +18,14 @@
 #include <assert.h>
 #include <windows.h>
 
+#define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
+
 typedef struct
 {
 	bool isEmpty;
 	int id;
 	int test;
-	/*
+	
 	unsigned long long accNum;
 	unsigned long fundSum;
 	SYSTEMTIME lasEdited;
@@ -31,7 +33,6 @@ typedef struct
 	char firstName[80];
 	char lastName[80];
 	char *patronymic[80];
-	*/
 
 } Account;
 
@@ -158,22 +159,39 @@ Account *searchMinValue(Account *accounts, int fieldShift, int fieldSize, int ar
 	return (accounts + index);
 }
 
-Account *searchAcc(Account *accounts, char *acc, int arrSize)
+Account *searchAccBy(Account *accounts, char *acc, int fieldShift, int fieldSize, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
-
-	long long a = atoll(acc);
 
 	for (int i = 0, ret; i < arrSize; i++)
 	{
 		if (!(accounts + i)->isEmpty)
 		{
-			ret = memicmp(&(accounts + i)->test, &a, sizeof(int));
+			ret = memcmp(&(accounts + i)->isEmpty + fieldShift, &acc, fieldSize);
 			if (ret == 0)
 				return accounts + i;
 		}
 	}
+
+	long long a = atoll(acc);
+	
+	long long minDiff = LLONG_MAX;
+	int index = 0, diff = 0;
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if (!(accounts + i)->isEmpty)
+		{
+			diff = DIFF(a, (accounts + i)->isEmpty + fieldShift);		//тут
+			if (diff < minDiff)
+			{
+				minDiff = diff;
+				index = i;
+			}
+		}
+	}
+	return accounts + index;
 }
 
 void removeAcc(Account *accounts, int arrSize, int id)
@@ -235,7 +253,7 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
-	printf("%d\n", searchAcc(accounts, acc, arrSize)->id);
+	printf("%d\n", searchAccBy(accounts, acc, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
 
 	//printf("Searching empty account ... ");
 	//Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
