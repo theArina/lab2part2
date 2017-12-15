@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <windows.h>
 
+#define nameLen 80
 #define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
 
 typedef struct
@@ -30,24 +31,52 @@ typedef struct
 	unsigned long fundSum;
 	SYSTEMTIME lasEdited;
 	
-	char firstName[80];
-	char lastName[80];
-	char *patronymic[80];
+	char firstName[nameLen];
+	char lastName[nameLen];
+	char patronymic[nameLen];
 
 } Account;
+
+char *generateNames(char *str, char *name)
+{
+	//char name[nameLen];
+	int n = rand() % 10;
+	int i;
+
+	for (i = 0; i <= n; str++)
+		if (*str == '/')
+			i++;
+
+	for (i = 0; *str != '/'; str++, i++)
+		name[i] = *str;
+	name[i] = '\0';
+	
+	return name;
+}
 
 void fillAccs(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
+	srand(8);
+
+	char fnames[] = "/Tom/Miles/Sam/Jennifer/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
+	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
+	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
+	char name[nameLen];
 
 	for (int i = 0; i < arrSize; i++)
 	{
 		(accounts + i)->id = i;
 		(accounts + i)->isEmpty = false;
 		(accounts + i)->test = 1 + rand() % 100;
-		(accounts + i)->accNum = (1 + rand() % 1000)*(1 + rand() % 1000000)*101;
-		(accounts + i)->fundSum = 1000 + rand() % 1000000;
+		(accounts + i)->accNum = rand() % 999*1000000 + rand() % 100000; //(1 + rand() % 1000)*(1 + rand() % 1000000)*101;
+		(accounts + i)->fundSum = rand() % 10000000 + 1000;
+
+		(accounts + i)->firstName = generateNames(fnames, name);
+		//(accounts + i)->lastName = generateNames(lnames);
+		//(accounts + i)->patronymic = generateNames(ptrs);
+		//printf("%s\n", generateNames(lnames, name));
 	}
 }
 
@@ -153,10 +182,10 @@ Account *searchMinValue(Account *accounts, int fieldShift, int fieldSize, int ar
 	
 	for (int i = 0, ret = 0; i < arrSize; i++)
 	{
-		ret = memcmp(&(accounts + i)->isEmpty + fieldShift, min, fieldSize);
+		ret = memcmp((byte*)(accounts + i) + fieldShift, min, fieldSize);
 		if (ret < 0)
 		{
-			memcpy(min, &(accounts + i)->isEmpty + fieldShift, fieldSize);
+			memcpy(min, (byte*)(accounts + i) + fieldShift, fieldSize);
 			index = i;
 		}
 	}
@@ -187,7 +216,7 @@ Account *searchAccBy(Account *accounts, char *acc, int fieldShift, int fieldSize
 	{
 		if (!(accounts + i)->isEmpty)
 		{
-			diff = DIFF(a, (accounts + i)->isEmpty + fieldShift);		//тут
+			diff = DIFF(a, *(byte*)(accounts + i) + fieldShift);		//тут
 			if (diff < minDiff)
 			{
 				minDiff = diff;
@@ -248,38 +277,18 @@ int main(int argc, char **argv)
 	int arrSize = 10;
 
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
-
+	
 	char *acc;
-	acc = "1";
+	acc = "10";
 
 	printf("Filling accounts ... ");
 	fillAccs(accounts, arrSize);
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
+	//printf("%d\n", searchMinValue(accounts, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
 	//printf("%d\n", searchAccBy(accounts, acc, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
-
-	//printf("Searching empty account ... ");
-	//Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
-
-	//if (emptyAcc == NULL)
-	//{
-	//	printf("Failed\n");
-	//	return 1;
-	//}
-
-	//printf("Ok, new size is %d\n", arrSize);
-
-	//emptyAcc->test = 999;
-	//printAccs(accounts, arrSize);
-
-	//printf("Updating test to %d in account with id %d ... ", 888, 0);
-	//Account accToUpdate;
-	//accToUpdate.id = 0;
-	//accToUpdate.test = 888;
-	//updateAcc(accounts, arrSize, &accToUpdate);
-	//printf("Ok\n");
-	//printAccs(accounts, arrSize);
+	printf("%d\n", *((int*)(accounts + 2) + sizeof(bool) + sizeof(int)));
 
 	free(accounts);
 }
