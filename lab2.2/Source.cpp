@@ -46,6 +46,8 @@ void fillAccs(Account *accounts, int arrSize)
 		(accounts + i)->id = i;
 		(accounts + i)->isEmpty = false;
 		(accounts + i)->test = 1 + rand() % 100;
+		(accounts + i)->accNum = (1 + rand() % 1000)*(1 + rand() % 1000000)*101;
+		(accounts + i)->fundSum = 1000 + rand() % 1000000;
 	}
 }
 
@@ -54,11 +56,13 @@ void printAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
-	printf("id	test\n\n");
+	printf("id	test      Num		  Sum\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
 		printf("%d	", (accounts + i)->id);
 		printf("%d	", (accounts + i)->test);
+		printf("%d	  ", (accounts + i)->accNum);
+		printf("%d	", (accounts + i)->fundSum);
 		printf("\n");
 	}
 	printf("\n");
@@ -253,7 +257,7 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
-	printf("%d\n", searchAccBy(accounts, acc, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
+	//printf("%d\n", searchAccBy(accounts, acc, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
 
 	//printf("Searching empty account ... ");
 	//Account *emptyAcc = searchEmptyAcc(&accounts, &arrSize);
