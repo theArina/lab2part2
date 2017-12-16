@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <windows.h>
 
-#define nameLen 80
+#define nameLen 10
 #define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
 
 typedef struct
@@ -39,7 +39,6 @@ typedef struct
 
 char *generateNames(char *str, char *name)
 {
-	//char name[nameLen];
 	int n = rand() % 10;
 	int i;
 
@@ -58,26 +57,29 @@ void fillAccs(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
+
 	srand(8);
 
-	char fnames[] = "/Tom/Miles/Sam/Jennifer/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
+	char fnames[] = "/Tom/Miles/Sam/Jenni/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
 	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
 	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
-	char name[nameLen];
+
+	char *name = (char*)malloc(sizeof(char) * nameLen);
 
 	for (int i = 0; i < arrSize; i++)
 	{
 		(accounts + i)->id = i;
 		(accounts + i)->isEmpty = false;
 		(accounts + i)->test = 1 + rand() % 100;
-		(accounts + i)->accNum = rand() % 999*1000000 + rand() % 100000; //(1 + rand() % 1000)*(1 + rand() % 1000000)*101;
+		(accounts + i)->accNum = rand() % 999*1000000 + rand() % 100000; 
 		(accounts + i)->fundSum = rand() % 10000000 + 1000;
 
-		(accounts + i)->firstName = generateNames(fnames, name);
-		//(accounts + i)->lastName = generateNames(lnames);
-		//(accounts + i)->patronymic = generateNames(ptrs);
-		//printf("%s\n", generateNames(lnames, name));
+		memcpy((accounts + i)->firstName, generateNames(fnames, name), nameLen);
+		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
+		memcpy((accounts + i)->patronymic, generateNames(ptrs, name), nameLen);
 	}
+
+	free(name);
 }
 
 void printAccs(Account *accounts, int arrSize)
@@ -85,13 +87,18 @@ void printAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
-	printf("id	test      Num		  Sum\n\n");
+	printf("Id	test\tNum\t\t  Sum\t\tFull Name\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
 		printf("%d	", (accounts + i)->id);
 		printf("%d	", (accounts + i)->test);
 		printf("%d	  ", (accounts + i)->accNum);
-		printf("%d	", (accounts + i)->fundSum);
+		printf("%d		", (accounts + i)->fundSum);
+
+		printf("%s ", (accounts + i)->firstName);
+		printf("%s ", (accounts + i)->lastName);
+		printf("%s ", (accounts + i)->patronymic);
+
 		printf("\n");
 	}
 	printf("\n");
@@ -288,7 +295,11 @@ int main(int argc, char **argv)
 
 	//printf("%d\n", searchMinValue(accounts, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
 	//printf("%d\n", searchAccBy(accounts, acc, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
-	printf("%d\n", *((int*)(accounts + 2) + sizeof(bool) + sizeof(int)));
+
+	printf("%d  ", *(int*)((byte*)(accounts + 2)) + sizeof(bool) + sizeof(int));
+	printf("%p\n", (int*)((byte*)(accounts + 2) + sizeof(bool) + sizeof(int)));
+	printf("%d ", (accounts + 2)->test);
+	printf("%p\n", &(accounts + 2)->test);
 
 	free(accounts);
 }
