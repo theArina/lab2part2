@@ -29,7 +29,7 @@ typedef struct
 	
 	unsigned long long accNum;
 	unsigned long fundSum;
-	SYSTEMTIME lasEdited;
+	unsigned long lasEdited;
 	
 	char firstName[nameLen];
 	char lastName[nameLen];
@@ -74,9 +74,14 @@ void fillAccs(Account *accounts, int arrSize)
 		(accounts + i)->accNum = rand() % 999*1000000 + rand() % 100000; 
 		(accounts + i)->fundSum = rand() % 10000000 + 1000;
 
+		SYSTEMTIME lasEdited;
+		GetLocalTime(&lasEdited);
+
 		memcpy((accounts + i)->firstName, generateNames(fnames, name), nameLen);
 		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
 		memcpy((accounts + i)->patronymic, generateNames(ptrs, name), nameLen);
+		
+		(accounts + i)->lasEdited = lasEdited.wSecond;
 	}
 
 	free(name);
@@ -87,18 +92,19 @@ void printAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
-	printf("Id	test\tNum\t\t  Sum\t\tFull Name\n\n");
+	printf("Id	test\tNum\t\t  Sum\t\tDate\t\tFull Name\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
 		printf("%d	", (accounts + i)->id);
 		printf("%d	", (accounts + i)->test);
-		printf("%d	  ", (accounts + i)->accNum);
-		printf("%d		", (accounts + i)->fundSum);
+		printf("%llu	  ", (accounts + i)->accNum);
+		printf("%lu		", (accounts + i)->fundSum);
+
+		printf("%lu	", (accounts + i)->lasEdited);
 
 		printf("%s ", (accounts + i)->firstName);
 		printf("%s ", (accounts + i)->lastName);
-		printf("%s ", (accounts + i)->patronymic);
-
+		printf("%s		", (accounts + i)->patronymic);
 		printf("\n");
 	}
 	printf("\n");
@@ -223,7 +229,7 @@ Account *searchAccBy(Account *accounts, char *acc, int fieldShift, int fieldSize
 	{
 		if (!(accounts + i)->isEmpty)
 		{
-			diff = DIFF(a, *(byte*)(accounts + i) + fieldShift);		//тут
+//			diff = DIFF(a, *(byte*)(accounts + i) + fieldShift);		//тут
 			if (diff < minDiff)
 			{
 				minDiff = diff;
@@ -293,11 +299,8 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
-	//printf("%d\n", searchMinValue(accounts, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
-	//printf("%d\n", searchAccBy(accounts, acc, sizeof(bool) + sizeof(int), sizeof(int), arrSize)->id);
-
-	printf("%d  ", *(int*)((byte*)(accounts + 2)) + sizeof(bool) + sizeof(int));
-	printf("%p\n", (int*)((byte*)(accounts + 2) + sizeof(bool) + sizeof(int)));
+  	printf("%d ", (int*)(byte*)(accounts + 2) + (((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2)) );
+	printf("%p\n", ((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2));
 	printf("%d ", (accounts + 2)->test);
 	printf("%p\n", &(accounts + 2)->test);
 
