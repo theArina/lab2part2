@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <windows.h>
+#include <ctime>
 
 #define nameLen 10
 #define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
@@ -29,7 +30,7 @@ typedef struct
 	
 	unsigned long long accNum;
 	unsigned long fundSum;
-	unsigned long lasEdited;
+	char* lasEdited;
 	
 	char firstName[nameLen];
 	char lastName[nameLen];
@@ -81,7 +82,9 @@ void fillAccs(Account *accounts, int arrSize)
 		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
 		memcpy((accounts + i)->patronymic, generateNames(ptrs, name), nameLen);
 		
-		(accounts + i)->lasEdited = lasEdited.wSecond;
+		time_t seconds = time(NULL);
+		tm* timeinfo = localtime(&seconds);
+		(accounts + i)->lasEdited = asctime(timeinfo);
 	}
 
 	free(name);
@@ -100,7 +103,7 @@ void printAccs(Account *accounts, int arrSize)
 		printf("%llu	  ", (accounts + i)->accNum);
 		printf("%lu		", (accounts + i)->fundSum);
 
-		printf("%lu	", (accounts + i)->lasEdited);
+		printf("%s	", (accounts + i)->lasEdited);
 
 		printf("%s ", (accounts + i)->firstName);
 		printf("%s ", (accounts + i)->lastName);
@@ -300,19 +303,21 @@ int main(int argc, char **argv)
 	printAccs(accounts, arrSize);
 
 	short idShift = sizeof(bool);
-	short tShift = sizeof(bool) + sizeof(int);
-	short aNShift = sizeof(bool) + sizeof(int) * 2;
+	short tShift = sizeof(bool) + sizeof(int) + 3;
+	short aNShift = sizeof(bool) + sizeof(int) * 2 + 4;
 	short fSShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long);
 	short lEShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long);
 	short fNShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2;
 	short lNShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2 + sizeof(char)*nameLen;
 	short pShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2 + sizeof(char)*nameLen * 2;
 
-	printf("%d \n", searchMinValue(accounts, tShift, sizeof(int), arrSize)->id);
-  	//printf("%d ", (int*)(byte*)(accounts + 2) + (((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2)) );
-	//printf("%p\n", ((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2));
-	//printf("%d ", (accounts + 2)->test);
-	//printf("%p\n", &(accounts + 2)->test);
+	//printf("%d \n", searchMinValue(accounts, aNShift, sizeof(unsigned long long), arrSize)->id);
+
+	printf("%d ", fSShift);
+	//printf("%d ", (int*)(byte*)(accounts + 2) + (((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2)) );
+	printf("%p\n", ((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2));
+	printf("%d ", (accounts + 2)->test);
+	printf("%p\n", &(accounts + 2)->test);
 
 	free(accounts);
 }
