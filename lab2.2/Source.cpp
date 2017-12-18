@@ -299,10 +299,20 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
-  	printf("%d ", (int*)(byte*)(accounts + 2) + (((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2)) );
-	printf("%p\n", ((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2));
-	printf("%d ", (accounts + 2)->test);
-	printf("%p\n", &(accounts + 2)->test);
+	short idShift = sizeof(bool);
+	short tShift = sizeof(bool) + sizeof(int);
+	short aNShift = sizeof(bool) + sizeof(int) * 2;
+	short fSShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long);
+	short lEShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long);
+	short fNShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2;
+	short lNShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2 + sizeof(char)*nameLen;
+	short pShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2 + sizeof(char)*nameLen * 2;
+
+	printf("%d \n", searchMinValue(accounts, tShift, sizeof(int), arrSize)->id);
+  	//printf("%d ", (int*)(byte*)(accounts + 2) + (((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2)) );
+	//printf("%p\n", ((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2));
+	//printf("%d ", (accounts + 2)->test);
+	//printf("%p\n", &(accounts + 2)->test);
 
 	free(accounts);
 }
