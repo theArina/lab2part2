@@ -71,7 +71,7 @@ void fillAccs(Account *accounts, int arrSize)
 	{
 		(accounts + i)->id = i;
 		(accounts + i)->isEmpty = false;
-		(accounts + i)->test = 1 + rand() % 100;
+		(accounts + i)->test = 1 + rand() ;
 		(accounts + i)->accNum = rand() % 999*1000000 + rand() % 100000; 
 		(accounts + i)->fundSum = rand() % 10000000 + 1000;
 
@@ -103,7 +103,7 @@ void printAccs(Account *accounts, int arrSize)
 		printf("%llu	  ", (accounts + i)->accNum);
 		printf("%lu		", (accounts + i)->fundSum);
 
-		printf("%s	", (accounts + i)->lasEdited);
+		//printf("%s	", (accounts + i)->lasEdited);
 
 		printf("%s ", (accounts + i)->firstName);
 		printf("%s ", (accounts + i)->lastName);
@@ -232,7 +232,7 @@ Account *searchAccBy(Account *accounts, char *acc, int fieldShift, int fieldSize
 	{
 		if (!(accounts + i)->isEmpty)
 		{
-//			diff = DIFF(a, *(byte*)(accounts + i) + fieldShift);		//тут
+			diff = DIFF(a, *(int*)((byte*)(accounts + i) + fieldShift));		
 			if (diff < minDiff)
 			{
 				minDiff = diff;
@@ -302,22 +302,16 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
-	short idShift = sizeof(bool);
-	short tShift = sizeof(bool) + sizeof(int) + 3;
-	short aNShift = sizeof(bool) + sizeof(int) * 2 + 4;
-	short fSShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long);
-	short lEShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long);
-	short fNShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2;
-	short lNShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2 + sizeof(char)*nameLen;
-	short pShift = sizeof(bool) + sizeof(int) * 2 + sizeof(unsigned long long) + sizeof(unsigned long) * 2 + sizeof(char)*nameLen * 2;
+	short idShift = (byte*)&accounts->id - (byte*)accounts;
+	short tShift = (byte*)&accounts->test - (byte*)accounts;
+	short aNShift = (byte*)&accounts->accNum - (byte*)accounts;
+	short fSShift = (byte*)&accounts->fundSum - (byte*)accounts;
+	short lEShift = (byte*)&accounts->lasEdited - (byte*)accounts;
+	short fNShift = (byte*)&accounts->firstName - (byte*)accounts;
+	short lNShift = (byte*)&accounts->lastName - (byte*)accounts;
+	short pShift = (byte*)&accounts->patronymic - (byte*)accounts;
 
-	//printf("%d \n", searchMinValue(accounts, aNShift, sizeof(unsigned long long), arrSize)->id);
-
-	printf("%d ", fSShift);
-	//printf("%d ", (int*)(byte*)(accounts + 2) + (((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2)) );
-	printf("%p\n", ((byte*)&(accounts + 2)->test) - (byte*)(accounts + 2));
-	printf("%d ", (accounts + 2)->test);
-	printf("%p\n", &(accounts + 2)->test);
+	printf("%d \n", searchMinValue(accounts, tShift, sizeof(int), arrSize)->id);
 
 	free(accounts);
 }
