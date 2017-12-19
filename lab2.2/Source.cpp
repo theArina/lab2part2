@@ -24,13 +24,22 @@
 
 typedef struct
 {
+	unsigned short day;
+	unsigned short month;
+	unsigned short year;
+	unsigned long seconds;
+
+} Date;
+
+typedef struct
+{
 	bool isEmpty;
 	int id;
-	int test;
+	unsigned int test;
 	
 	unsigned long long accNum;
 	unsigned long fundSum;
-	char* lasEdited;
+	Date lasEdited;
 	
 	char firstName[nameLen];
 	char lastName[nameLen];
@@ -59,32 +68,33 @@ void fillAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);
 	assert(arrSize > 0);
 
-	srand(8);
+	srand(time(NULL));
 
 	char fnames[] = "/Tom/Miles/Sam/Jenni/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
 	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
 	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
 
 	char *name = (char*)malloc(sizeof(char) * nameLen);
+	int secPerDay = 24 * 60 * 60;
 
 	for (int i = 0; i < arrSize; i++)
 	{
 		(accounts + i)->id = i;
 		(accounts + i)->isEmpty = false;
-		(accounts + i)->test = 1 + rand() ;
-		(accounts + i)->accNum = rand() % 999*1000000 + rand() % 100000; 
-		(accounts + i)->fundSum = rand() % 10000000 + 1000;
+		(accounts + i)->accNum = (unsigned long long)rand() % 999*1000000 + rand() % 100000;
+		(accounts + i)->fundSum = (unsigned long)rand() % 10000000 + 1000;
 
-		SYSTEMTIME lasEdited;
-		GetLocalTime(&lasEdited);
+		(accounts + i)->lasEdited.day = (unsigned short)rand() % 30 + 1;
+		(accounts + i)->lasEdited.month = (unsigned short)rand() % 11 + 1;
+		(accounts + i)->lasEdited.year = (unsigned short)rand() % 7 + 2010;
+		(accounts + i)->lasEdited.seconds = ((accounts + i)->lasEdited.day * secPerDay) +
+			((accounts + i)->lasEdited.month * secPerDay * 30) + 
+			((accounts + i)->lasEdited.year-2000) * secPerDay * 365;
 
 		memcpy((accounts + i)->firstName, generateNames(fnames, name), nameLen);
 		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
 		memcpy((accounts + i)->patronymic, generateNames(ptrs, name), nameLen);
-		
-		time_t seconds = time(NULL);
-		tm* timeinfo = localtime(&seconds);
-		(accounts + i)->lasEdited = asctime(timeinfo);
+
 	}
 
 	free(name);
@@ -95,15 +105,17 @@ void printAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
-	printf("Id	test\tNum\t\t  Sum\t\tDate\t\tFull Name\n\n");
+	printf("Id\tNum\t\t  Sum\t\tDate\t\tFull Name\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
 		printf("%d	", (accounts + i)->id);
-		printf("%d	", (accounts + i)->test);
 		printf("%llu	  ", (accounts + i)->accNum);
 		printf("%lu		", (accounts + i)->fundSum);
 
-		//printf("%s	", (accounts + i)->lasEdited);
+		printf("%u.", (accounts + i)->lasEdited.day);
+		printf("%u.", (accounts + i)->lasEdited.month);
+		printf("%u\t", (accounts + i)->lasEdited.year);
+		//printf("%lu\t", (accounts + i)->lasEdited.seconds);
 
 		printf("%s ", (accounts + i)->firstName);
 		printf("%s ", (accounts + i)->lastName);
@@ -186,61 +198,155 @@ Account *searchEmptyAcc(Account **accounts, int *arrSize)
 		return (*accounts + i);
 }
 
-Account *searchMinValue(Account *accounts, int fieldShift, int fieldSize, int arrSize)
+Account *searchMinValue(Account *accounts, short enter, int arrSize)
 {
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0); 
+	assert(accounts != NULL);
+	assert(arrSize > 0);
 
 	int index = 0;
-	byte buffer[256];
-	memset(buffer, 0xff, 256);
-	void *min = buffer;
-	
-	for (int i = 0, ret = 0; i < arrSize; i++)
+	unsigned long long min = ULLONG_MAX;
+	unsigned long min2 = ULONG_MAX;
+	unsigned long min3 = ULONG_MAX;
+
+	switch(enter)
 	{
-		ret = memcmp((byte*)(accounts + i) + fieldShift, min, fieldSize);
-		if (ret < 0)
-		{
-			memcpy(min, (byte*)(accounts + i) + fieldShift, fieldSize);
-			index = i;
-		}
+		case 1:
+			
+			for (int i = 0; i < arrSize; i++)
+			{
+				if (min >(accounts + i)->accNum)
+				{
+					min = (accounts + i)->accNum;
+					index = i;
+				}
+			}
+			return (accounts + index);
+
+		case 2:
+			
+			for (int i = 0; i < arrSize; i++)
+			{
+				if (min2 >(accounts + i)->fundSum)
+				{
+					min2 = (accounts + i)->fundSum;
+					index = i;
+				}
+			}
+			return (accounts + index);
+
+		case 3:
+
+			for (int i = 0; i < arrSize; i++)
+			{
+				if (min3 >(accounts + i)->lasEdited.seconds)
+				{
+					min3 = (accounts + i)->lasEdited.seconds;
+					index = i;
+				}
+			}
+			return (accounts + index);
 	}
-	return (accounts + index);
+
 }
 
-Account *searchAccBy(Account *accounts, char *acc, int fieldShift, int fieldSize, int arrSize)
+Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
 
-	for (int i = 0, ret; i < arrSize; i++)
-	{
-		if (!(accounts + i)->isEmpty)
-		{
-			ret = memcmp(&(accounts + i)->isEmpty + fieldShift, &acc, fieldSize);
-			if (ret == 0)
-				return accounts + i;
-		}
-	}
-
 	long long a = atoll(acc);
-	
-	long long minDiff = LLONG_MAX;
-	int index = 0, diff = 0;
+	int index = 0;
+	int diff = 0;
 
-	for (int i = 0; i < arrSize; i++)
+	long long minDiff = LLONG_MAX;
+	long minDiff2 = LONG_MAX;
+
+	switch (enter)
 	{
-		if (!(accounts + i)->isEmpty)
+
+	case 1:
+
+		for (int i = 0; i < arrSize; i++)
 		{
-			diff = DIFF(a, *(int*)((byte*)(accounts + i) + fieldShift));		
-			if (diff < minDiff)
+			if (!(accounts + i)->isEmpty)
 			{
-				minDiff = diff;
-				index = i;
+				if ((accounts + i)->accNum == a)
+					return accounts + i;
+			}
+		}
+		
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
+				diff = DIFF(a, (accounts + i)->accNum);
+				if (diff < minDiff)
+				{
+					minDiff = diff;
+					index = i;
+				}
+			}
+		}
+		return accounts + index;
+
+	case 2:
+
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
+				if ((accounts + i)->fundSum == a)
+					return accounts + i;
+			}
+		}
+
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
+				diff = DIFF(a, (accounts + i)->fundSum);
+				if (diff < minDiff2)
+				{
+					minDiff2 = diff;
+					index = i;
+				}
+			}
+		}
+		return accounts + index;
+
+	case 3:
+
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
+				if ((accounts + i)->firstName == acc)
+					return accounts + i;
+			}
+		}
+
+	case 4:
+
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
+				if ((accounts + i)->lastName == acc)
+					return accounts + i;
+			}
+		}
+
+	case 5:
+
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
+				if ((accounts + i)->patronymic == acc)
+					return accounts + i;
 			}
 		}
 	}
-	return accounts + index;
 }
 
 void removeAcc(Account *accounts, int arrSize, int id)
@@ -263,7 +369,7 @@ void updateAcc(Account *accounts, int arrSize, Account *acc)
 			memcpy(accounts + i, acc, sizeof(Account));
 }
 
-void sortAccs(Account *accounts, int fieldShift, int fieldSize, int arrSize)
+void sortAccs(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);   
@@ -273,8 +379,7 @@ void sortAccs(Account *accounts, int fieldShift, int fieldSize, int arrSize)
 		for (int j = 0, ret = 0; j < arrSize - 1 - i; j++)
 		{
 			bool needSwap = false;
-			ret = memcmp(&(accounts + j)->isEmpty + fieldShift, &(accounts + j + 1)->isEmpty + fieldShift, fieldSize);
-			if (ret > 0)
+			if ((accounts + j)->test > (accounts + j + 1)->test)
 				needSwap = true;
 
 			if (needSwap)
@@ -302,16 +407,8 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
-	short idShift = (byte*)&accounts->id - (byte*)accounts;
-	short tShift = (byte*)&accounts->test - (byte*)accounts;
-	short aNShift = (byte*)&accounts->accNum - (byte*)accounts;
-	short fSShift = (byte*)&accounts->fundSum - (byte*)accounts;
-	short lEShift = (byte*)&accounts->lasEdited - (byte*)accounts;
-	short fNShift = (byte*)&accounts->firstName - (byte*)accounts;
-	short lNShift = (byte*)&accounts->lastName - (byte*)accounts;
-	short pShift = (byte*)&accounts->patronymic - (byte*)accounts;
-
-	printf("%d \n", searchMinValue(accounts, tShift, sizeof(int), arrSize)->id);
+	short enter = 3;
+	printf("%d \n", searchMinValue(accounts, enter, arrSize)->id);
 
 	free(accounts);
 }
