@@ -63,6 +63,14 @@ char *generateNames(char *str, char *name)
 	return name;
 }
 
+unsigned long secondsSince(Account *accounts, int i)
+{
+	int secPerDay = 24 * 60 * 60;
+	return (((accounts + i)->lasEdited.day * secPerDay) +
+		((accounts + i)->lasEdited.month * secPerDay * 30) +
+		((accounts + i)->lasEdited.year - 2000) * secPerDay * 365);
+}
+
 void fillAccs(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);
@@ -75,7 +83,6 @@ void fillAccs(Account *accounts, int arrSize)
 	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
 
 	char *name = (char*)malloc(sizeof(char) * nameLen);
-	int secPerDay = 24 * 60 * 60;
 
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -87,9 +94,7 @@ void fillAccs(Account *accounts, int arrSize)
 		(accounts + i)->lasEdited.day = (unsigned short)rand() % 30 + 1;
 		(accounts + i)->lasEdited.month = (unsigned short)rand() % 11 + 1;
 		(accounts + i)->lasEdited.year = (unsigned short)rand() % 7 + 2010;
-		(accounts + i)->lasEdited.seconds = ((accounts + i)->lasEdited.day * secPerDay) +
-			((accounts + i)->lasEdited.month * secPerDay * 30) + 
-			((accounts + i)->lasEdited.year-2000) * secPerDay * 365;
+		(accounts + i)->lasEdited.seconds = secondsSince(accounts, i);
 
 		memcpy((accounts + i)->firstName, generateNames(fnames, name), nameLen);
 		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
@@ -100,6 +105,35 @@ void fillAccs(Account *accounts, int arrSize)
 	free(name);
 }
 
+void printAcc(Account *accounts, int arrSize, int id)
+{
+	assert(accounts != NULL);
+	assert(arrSize > 0);
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if ((accounts + i)->id == id)
+		{
+			if ((accounts + i)->isEmpty == false)
+			{
+				printf("%d	", (accounts + i)->id);
+				printf("%llu	  ", (accounts + i)->accNum);
+				printf("%lu		", (accounts + i)->fundSum);
+
+				printf("%u.", (accounts + i)->lasEdited.day);
+				printf("%u.", (accounts + i)->lasEdited.month);
+				printf("%u\t", (accounts + i)->lasEdited.year);
+				//printf("%lu\t", (accounts + i)->lasEdited.seconds);
+
+				printf("%s ", (accounts + i)->firstName);
+				printf("%s ", (accounts + i)->lastName);
+				printf("%s		", (accounts + i)->patronymic);
+				printf("\n");
+			}
+		}
+	}
+}
+
 void printAccs(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
@@ -108,70 +142,9 @@ void printAccs(Account *accounts, int arrSize)
 	printf("Id\tNum\t\t  Sum\t\tDate\t\tFull Name\n\n");
 	for (int i = 0; i < arrSize; i++)
 	{
-		printf("%d	", (accounts + i)->id);
-		printf("%llu	  ", (accounts + i)->accNum);
-		printf("%lu		", (accounts + i)->fundSum);
-
-		printf("%u.", (accounts + i)->lasEdited.day);
-		printf("%u.", (accounts + i)->lasEdited.month);
-		printf("%u\t", (accounts + i)->lasEdited.year);
-		//printf("%lu\t", (accounts + i)->lasEdited.seconds);
-
-		printf("%s ", (accounts + i)->firstName);
-		printf("%s ", (accounts + i)->lastName);
-		printf("%s		", (accounts + i)->patronymic);
-		printf("\n");
+		printAcc(accounts, arrSize, i);
 	}
 	printf("\n");
-}
-
-Account *scanAcc(Account *accounts, int arrSize, int id)
-{
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0);
-
-	for (int i = 0; i < arrSize; i++)
-	{
-		if ((accounts + i)->id == id)
-		{
-			printf("please enter a number:\n");
-			scanf("%d", &((accounts + i)->test));
-			return accounts + i;
-		}
-	}
-
-	return NULL;
-}
-
-void printAcc(Account *accounts, int arrSize, int id)
-{
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0);
-
-	for (int i = 0; i < arrSize; i++)
-	{
-		if ((accounts + i)->id == id)
-		{
-			if ((accounts + i)->isEmpty == false)
-				printf("%d \n", (accounts + i)->test);
-		}
-	}
-
-	printf("account with this id doesent exist\n");
-}
-
-void clearAcc(Account *accounts, int arrSize, int id)
-{
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0); 
-
-	for (int i = 0; i < arrSize; i++)
-	{
-		if ((accounts + i)->id == id)
-		{
-			(accounts + id)->test = 0;
-		}
-	}
 }
 
 Account *searchEmptyAcc(Account **accounts, int *arrSize)
@@ -320,7 +293,7 @@ Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 		{
 			if (!(accounts + i)->isEmpty)
 			{
-				if ((accounts + i)->firstName == acc)
+				if ((accounts + i)->lasEdited == )
 					return accounts + i;
 			}
 		}
@@ -331,7 +304,7 @@ Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 		{
 			if (!(accounts + i)->isEmpty)
 			{
-				if ((accounts + i)->lastName == acc)
+				if ((accounts + i)->firstName == acc)
 					return accounts + i;
 			}
 		}
@@ -342,9 +315,64 @@ Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 		{
 			if (!(accounts + i)->isEmpty)
 			{
+				if ((accounts + i)->lastName == acc)
+					return accounts + i;
+			}
+		}
+
+	case 6:
+
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (!(accounts + i)->isEmpty)
+			{
 				if ((accounts + i)->patronymic == acc)
 					return accounts + i;
 			}
+		}
+	}
+}
+
+void scanAcc(Account *accounts, int arrSize)
+{
+	assert(accounts != NULL);
+	assert(arrSize > 0);
+
+	Account *i = searchEmptyAcc(&accounts, &arrSize);
+
+	i->id = 1234; //todo
+	printf("enter account number: ");
+	scanf("%llu", &i->accNum);
+	printf("enter sum of fund: ");
+	scanf("%lu", &i->fundSum);
+
+	printf("enter day: ");
+	scanf("%u", &i->lasEdited.day);
+	printf("enter month: ");
+	scanf("%u", &i->lasEdited.month);
+	printf("enter year: ");
+	scanf("%u", &i->lasEdited.year);
+	//i->lasEdited.seconds = secondsSince(accounts, )//todo;
+
+	printf("enter name: ");
+	scanf("%s", &i->firstName);
+	printf("enter surname: ");
+	scanf("%s", &i->lastName);
+	printf("enter patronymic: ");
+	scanf("%s", &i->patronymic);
+	printf("\n");
+}
+
+void clearAcc(Account *accounts, int arrSize, int id)
+{
+	assert(accounts != NULL);
+	assert(arrSize > 0);
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if ((accounts + i)->id == id)
+		{
+			(accounts + id)->test = 0;
 		}
 	}
 }
@@ -407,8 +435,11 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
 
+	scanAcc(accounts, arrSize);
+	printAccs(accounts, arrSize);
+
 	short enter = 3;
-	printf("%d \n", searchMinValue(accounts, enter, arrSize)->id);
+	//printAcc(accounts, arrSize, searchMinValue(accounts, enter, arrSize)->id);
 
 	free(accounts);
 }
