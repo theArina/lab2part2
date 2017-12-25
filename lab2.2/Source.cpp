@@ -252,8 +252,8 @@ Account *searchAccBy(Account *accounts, char *acc, short field, int arrSize)
 				break;
 			case 3:
 
-				//				if ((accounts + i)->lasEdited == )
-				index = i;
+				//if ((accounts + i)->lasEdited == )
+					index = i;
 				break;
 			case 4:
 
@@ -275,7 +275,6 @@ Account *searchAccBy(Account *accounts, char *acc, short field, int arrSize)
 	}
 	return accounts + index;
 } 
-//todo
 
 void scanAcc(Account *acc)
 {
