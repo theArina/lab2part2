@@ -20,7 +20,6 @@
 #include <ctime>
 
 #define nameLen 10
-#define DIFF(x, y) ((x) > (y) ? (x - y) : (y - x))
 
 typedef struct
 {
@@ -46,7 +45,7 @@ typedef struct
 
 } Account;
 
-char *generateNames(char *str, char *name)
+char* generateNames(char *str, char *name)
 {
 	int n = rand() % 10;
 	int i;
@@ -142,7 +141,29 @@ void printAccs(Account *accounts, int arrSize)
 	printf("\n");
 }
 
-Account *searchEmptyAcc(Account **accounts, int *arrSize)
+void reverse(char *temp)
+{
+	for (int y = 0, c = 0, j = strlen(temp) - 1; y < j; y++, j--)
+	{
+		c = temp[y];
+		temp[y] = temp[j];
+		temp[j] = c;
+	}
+}
+
+int compareStr(char *temp, char *acc)
+{
+	int dif = strlen(temp) - strlen(acc);
+	for (int j = 0; j >= dif; j++)
+	{
+		for (int y = 0; y < strlen(acc) && temp[y] == acc[y]; y++)
+			if (y == strlen(acc))
+				return 0;
+	}
+	return 1;
+}
+
+Account* searchEmptyAcc(Account **accounts, int *arrSize)
 {
 	int i;
 	Account *mAccounts = *accounts;
@@ -168,7 +189,7 @@ Account *searchEmptyAcc(Account **accounts, int *arrSize)
 	}
 }
 
-Account *searchMinValue(Account *accounts, short field, int arrSize)
+Account* searchMinValue(Account *accounts, short field, int arrSize)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
@@ -212,68 +233,88 @@ Account *searchMinValue(Account *accounts, short field, int arrSize)
 	return (accounts + index);
 }
 
-Account *searchAccBy(Account *accounts, char *acc, short field, int arrSize) 
+void searchAcc(Account *accounts, int arrSize) 
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
 
-	long long a = atoll(acc);
-	int index = 0;
-	int diff = 0;
-
-	long long minDiff = LLONG_MAX;
-	long minDiff2 = LONG_MAX;
-
-	short len = strlen(acc);
+	char acc[50] = "1";/*
+	printf("enter data: ");
+	scanf("%s", &acc);*/
 
 	for (int i = 0; i < arrSize; i++)
 	{
 		if (!(accounts + i)->isEmpty)
 		{
-			switch (field)
+			char temp[20];
+			int j = 0;
+			do {
+				temp[j++] = (accounts + i)->id % 10 + '0'; // тут конвертируем 
+			} while (((accounts + i)->id /= 10) > 0);	   // в перевернутую строку
+			temp[j] = '\0';
+			reverse(temp);								   // собственно, переворачиваем
+			if(compareStr(temp, acc) == 0)				   // тут вроде как ищем подстроку acc в строке temp, типа приблизительное значение
+			{											   // и если нашли, то возвращаем 0, если нет 1 в функции compareStr
+				printAcc(accounts, arrSize, i);			   // печатаем, ну, потому что так тоже пока сойдет, я понимаю что не надо так
+				//continue;								   // там дальше делаем это со всеми полями и, если есть хоть одно совпадение,
+			}											   // печатаем всю структуру и продолжаем идти по массиву структур
+/*
+			do {
+				temp[j++] = (accounts + i)->accNum % 10 + '0';
+			} while (((accounts + i)->accNum /= 10) > 0);
+			temp[j] = '\0';
+			reverse(temp);
+			if (compareStr(temp, acc) == 0)
 			{
-			case 1:
-
-				diff = DIFF(a, (accounts + i)->accNum);
-				if (diff < minDiff)
-				{
-					minDiff = diff;
-					index = i;
-				}
-				break;
-			case 2:
-
-				diff = DIFF(a, (accounts + i)->fundSum);
-				if (diff < minDiff2)
-				{
-					minDiff2 = diff;
-					index = i;
-				}
-				break;
-			case 3:
-
-				//if ((accounts + i)->lasEdited == )
-					index = i;
-				break;
-			case 4:
-
-				if (memcmp((accounts + i)->firstName, acc, len) == 0)
-					index = i;
-				break;
-			case 5:
-
-				if (memcmp((accounts + i)->lastName, acc, len) == 0)
-					index = i;
-				break;
-			case 6:
-
-				if (memcmp((accounts + i)->patronymic, acc, len) == 0)
-					index = i;
-				break;
+				printAcc(accounts, arrSize, i);
+				continue;
 			}
+
+			do {
+				temp[j++] = (accounts + i)->fundSum % 10 + '0';
+			} while (((accounts + i)->fundSum /= 10) > 0);
+			temp[j] = '\0';
+			reverse(temp);
+			if (compareStr(temp, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+
+			do {
+				temp[j++] = (accounts + i)->lasEdited.day % 10 + '0';
+			} while (((accounts + i)->lasEdited.day /= 10) > 0);
+			temp[j] = '\0';
+			reverse(temp);
+			if (compareStr(temp, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			
+			do {
+				temp[j++] = (accounts + i)->lasEdited.month % 10 + '0';
+			} while (((accounts + i)->lasEdited.month /= 10) > 0);
+			temp[j] = '\0';
+			reverse(temp);
+			if (compareStr(temp, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			
+			do {
+				temp[j++] = (accounts + i)->lasEdited.year % 10 + '0';
+			} while (((accounts + i)->lasEdited.year /= 10) > 0);
+			temp[j] = '\0';
+			reverse(temp);
+			if (compareStr(temp, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}*/
 		}
 	}
-	return accounts + index;
 } 
 
 void scanAcc(Account *acc)
@@ -404,19 +445,15 @@ void sortAccsBy(Account *accounts, short field, int arrSize)
 int main(int argc, char **argv)
 {
 	int arrSize = 10;
-
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
-	
-	char *acc;
-	acc = "10";
 
 	printf("Filling accounts ... ");
 	fillAccs(accounts, arrSize);
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
-
-	short enter = 3;
-	printAcc(accounts, arrSize, searchMinValue(accounts, enter, arrSize)->id);
+	
+	searchAcc(accounts, arrSize);
 
 	free(accounts);
+	return 0;
 }
