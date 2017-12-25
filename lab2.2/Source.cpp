@@ -138,7 +138,7 @@ void printAccs(Account *accounts, int arrSize)
 
 	printf("Id\tNum\t\t  Sum\t\tDate\t\tFull Name\n\n");
 	for (int i = 0; i < arrSize; i++)
-		printAcc(accounts, arrSize, i);
+		printAcc(accounts, arrSize, (accounts + i)->id);
 	printf("\n");
 }
 
@@ -168,7 +168,7 @@ Account *searchEmptyAcc(Account **accounts, int *arrSize)
 	}
 }
 
-Account *searchMinValue(Account *accounts, short enter, int arrSize)
+Account *searchMinValue(Account *accounts, short field, int arrSize)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
@@ -178,48 +178,41 @@ Account *searchMinValue(Account *accounts, short enter, int arrSize)
 	unsigned long min2 = ULONG_MAX;
 	unsigned long min3 = ULONG_MAX;
 
-	switch(enter)
+	for (int i = 0; i < arrSize; i++)
 	{
+		switch (field)
+		{
 		case 1:
-			
-			for (int i = 0; i < arrSize; i++)
+
+			if (min > (accounts + i)->accNum)
 			{
-				if (min >(accounts + i)->accNum)
-				{
-					min = (accounts + i)->accNum;
-					index = i;
-				}
+				min = (accounts + i)->accNum;
+				index = i;
 			}
-			return (accounts + index);
+			break;
 
 		case 2:
-			
-			for (int i = 0; i < arrSize; i++)
-			{
-				if (min2 >(accounts + i)->fundSum)
-				{
-					min2 = (accounts + i)->fundSum;
-					index = i;
-				}
-			}
-			return (accounts + index);
 
+			if (min2 > (accounts + i)->fundSum)
+			{
+				min2 = (accounts + i)->fundSum;
+				index = i;
+			}
+			break;
 		case 3:
 
-			for (int i = 0; i < arrSize; i++)
+			if (min3 > (accounts + i)->lasEdited.seconds)
 			{
-				if (min3 >(accounts + i)->lasEdited.seconds)
-				{
-					min3 = (accounts + i)->lasEdited.seconds;
-					index = i;
-				}
+				min3 = (accounts + i)->lasEdited.seconds;
+				index = i;
 			}
-			return (accounts + index);
+			break;
+		}
 	}
-
+	return (accounts + index);
 }
 
-Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
+Account *searchAccBy(Account *accounts, char *acc, short field, int arrSize) 
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
@@ -233,18 +226,10 @@ Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 
 	short len = strlen(acc);
 
-	switch (enter)
+	switch (field)
 	{
 	case 1:
-
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
-				if ((accounts + i)->accNum == a)
-					return accounts + i;
-			}
-		}		
+	
 		for (int i = 0; i < arrSize; i++)
 		{
 			if (!(accounts + i)->isEmpty)
@@ -261,14 +246,6 @@ Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 
 	case 2:
 
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
-				if ((accounts + i)->fundSum == a)
-					return accounts + i;
-			}
-		}
 		for (int i = 0; i < arrSize; i++)
 		{
 			if (!(accounts + i)->isEmpty)
@@ -324,6 +301,31 @@ Account *searchAccBy(Account *accounts, char *acc, short enter, int arrSize)
 			}
 		}
 	}
+} 
+//todo
+
+void scanAcc(Account *acc)
+{
+	printf("enter account number: ");
+	scanf("%llu", &acc->accNum);
+	printf("enter sum of fund: ");
+	scanf("%lu", &acc->fundSum);
+
+	printf("enter day: ");
+	scanf("%hu", &acc->lasEdited.day);
+	printf("enter month: ");
+	scanf("%hu", &acc->lasEdited.month);
+	printf("enter year: ");
+	scanf("%hu", &acc->lasEdited.year);
+	acc->lasEdited.seconds = secondsSince(acc);
+
+	printf("enter name: ");
+	scanf("%s", &acc->firstName);
+	printf("enter surname: ");
+	scanf("%s", &acc->lastName);
+	printf("enter patronymic: ");
+	scanf("%s", &acc->patronymic);
+	printf("\n");
 }
 
 void addAcc(Account *accounts, int *arrSize)
@@ -331,30 +333,11 @@ void addAcc(Account *accounts, int *arrSize)
 	assert(accounts != NULL);
 	assert(arrSize > 0);
 
-	Account *i = searchEmptyAcc(&accounts, arrSize);
+	Account *acc = searchEmptyAcc(&accounts, arrSize);
 
-	i->isEmpty = false;
+	acc->isEmpty = false;
 
-	printf("enter account number: ");
-	scanf("%llu", &i->accNum);
-	printf("enter sum of fund: ");
-	scanf("%lu", &i->fundSum);
-
-	printf("enter day: ");
-	scanf("%hu", &i->lasEdited.day);
-	printf("enter month: ");
-	scanf("%hu", &i->lasEdited.month);
-	printf("enter year: ");
-	scanf("%hu", &i->lasEdited.year);
-	i->lasEdited.seconds = secondsSince(i);
-
-	printf("enter name: ");
-	scanf("%s", &i->firstName);
-	printf("enter surname: ");
-	scanf("%s", &i->lastName);
-	printf("enter patronymic: ");
-	scanf("%s", &i->patronymic);
-	printf("\n");
+	scanAcc(acc);
 }
 
 void clearAcc(Account *accounts, int arrSize, int id)
@@ -389,54 +372,51 @@ void removeAcc(Account *accounts, int arrSize, int id)
 			(accounts + i)->isEmpty = true;
 }
 
-void updateAcc(Account *accounts, int arrSize, Account *acc)
+void updateAcc(Account *accounts, int arrSize, int id)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
 	for (int i = 0; i < arrSize; i++)
-		if ((accounts + i)->id == acc->id)
-			memcpy(accounts + i, acc, sizeof(Account));
+		if ((accounts + i)->id == id)
+			scanAcc(accounts + i);	
 }
 
-void sortAccs(Account *accounts, short enter, int arrSize)
+void sortAccsBy(Account *accounts, short field, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);   
-	
-	void *p = 0;
-
-	switch (enter)
-	{
-	case 0:
-
-		p = (int*)p;
-		p = &(accounts + 0)->id;
-		break;
-	case 1:
-
-		p = (unsigned long long*)p;
-		p = &(accounts + 0)->accNum;
-		break;
-	case 2:
-
-		p = (unsigned long*)p;
-		p = &(accounts + 0)->fundSum;
-		break;
-	case 3:
-
-		p = (unsigned long*)p;
-		p = &(accounts + 0)->lasEdited.seconds;
-		break;
-	}
 
 	for (int i = 0; i < arrSize - 1; i++)
 	{
 		for (int j = 0; j < arrSize - 1 - i; j++)
 		{
 			bool needSwap = false;
-			//if (*(p + sizeof(Account)*j) > *(p + sizeof(Account)*(j + 1))) // why not
-				needSwap = true;
+			switch (field)
+			{
+			case 0:
+
+				if ((accounts + j)->id > (accounts + j + 1)->id)
+					needSwap = true;
+				break;
+			case 1:
+
+				if ((accounts + j)->accNum > (accounts + j + 1)->accNum)
+					needSwap = true;
+				break;
+			case 2:
+
+				if ((accounts + j)->fundSum > (accounts + j + 1)->fundSum)
+					needSwap = true;
+				break;
+			case 3:
+
+				if ((accounts + j)->lasEdited.seconds > (accounts + j + 1)->lasEdited.seconds)
+					needSwap = true;
+				break;
+			default:
+				break;
+			}
 
 			if (needSwap)
 			{
