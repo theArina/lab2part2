@@ -226,81 +226,54 @@ Account *searchAccBy(Account *accounts, char *acc, short field, int arrSize)
 
 	short len = strlen(acc);
 
-	switch (field)
+	for (int i = 0; i < arrSize; i++)
 	{
-	case 1:
-	
-		for (int i = 0; i < arrSize; i++)
+		if (!(accounts + i)->isEmpty)
 		{
-			if (!(accounts + i)->isEmpty)
+			switch (field)
 			{
+			case 1:
+
 				diff = DIFF(a, (accounts + i)->accNum);
 				if (diff < minDiff)
 				{
 					minDiff = diff;
 					index = i;
 				}
-			}
-		}
-		return accounts + index;
+				break;
+			case 2:
 
-	case 2:
-
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
 				diff = DIFF(a, (accounts + i)->fundSum);
 				if (diff < minDiff2)
 				{
 					minDiff2 = diff;
 					index = i;
 				}
-			}
-		}
-		return accounts + index;
+				break;
+			case 3:
 
-	case 3:
+				//				if ((accounts + i)->lasEdited == )
+				index = i;
+				break;
+			case 4:
 
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
-//				if ((accounts + i)->lasEdited == )
-					return accounts + i;
-			}
-		}
-	case 4:
-
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
 				if (memcmp((accounts + i)->firstName, acc, len) == 0)
-					return accounts + i;
-			}
-		}
-	case 5:
+					index = i;
+				break;
+			case 5:
 
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
 				if (memcmp((accounts + i)->lastName, acc, len) == 0)
-					return accounts + i;
-			}
-		}
-	case 6:
+					index = i;
+				break;
+			case 6:
 
-		for (int i = 0; i < arrSize; i++)
-		{
-			if (!(accounts + i)->isEmpty)
-			{
 				if (memcmp((accounts + i)->patronymic, acc, len) == 0)
-					return accounts + i;
+					index = i;
+				break;
 			}
 		}
 	}
+	return accounts + index;
 } 
 //todo
 
