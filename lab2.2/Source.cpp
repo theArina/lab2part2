@@ -113,7 +113,7 @@ void printAcc(Account *accounts, int arrSize, int id)
 		{
 			if ((accounts + i)->isEmpty == false)
 			{
-				printf("%d	", (accounts + i)->id);
+				printf(" %d	", (accounts + i)->id);
 				printf("%llu	  ", (accounts + i)->accNum);
 				printf("%lu		", (accounts + i)->fundSum);
 
@@ -135,13 +135,24 @@ void printAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
-	printf("Id\tAccount number\t  Sum\t\tDate\t\tFull name\n\n");
+	printf(" Id\tAccount number\t  Sum\t\tDate\t\tFull name\n\n");
 	for (int i = 0; i < arrSize; i++)
 		printAcc(accounts, arrSize, (accounts + i)->id);
 	printf("\n");
 }
 
-void reverse(char *temp)
+char* myItoa(char *temp, int n)
+{
+	int j = 0;
+	do {
+		temp[j++] = n % 10 + '0';
+	} while ((n /= 10) > 0);
+	temp[j] = '\0';
+
+	return temp;
+}
+
+char* reverse(char *temp)
 {
 	for (int y = 0, c = 0, j = strlen(temp) - 1; y < j; y++, j--)
 	{
@@ -149,6 +160,8 @@ void reverse(char *temp)
 		temp[y] = temp[j];
 		temp[j] = c;
 	}
+
+	return temp;
 }
 
 int compareStr(char *temp, char *acc)
@@ -161,6 +174,77 @@ int compareStr(char *temp, char *acc)
 			return 0;
 	}
 	return 1;
+}
+
+void searchAcc(Account *accounts, int arrSize)
+{
+	assert(accounts != NULL);
+	assert(arrSize > 0);
+
+	char acc[50] = "To";
+	printf("enter data: ");
+	scanf("%s", &acc);
+
+	char *temp = (char*)malloc(sizeof(char) * 50);
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if (!(accounts + i)->isEmpty)
+		{
+			int id = (accounts + i)->id;
+			if (compareStr(reverse(myItoa(temp, id)), acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			unsigned long long num = (accounts + i)->accNum;
+			if (compareStr(reverse(myItoa(temp, num)), acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			unsigned long sum = (accounts + i)->fundSum;
+			if (compareStr(reverse(myItoa(temp, sum)), acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			unsigned short date = (accounts + i)->lasEdited.day;
+			if (compareStr(reverse(myItoa(temp, date)), acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			date = (accounts + i)->lasEdited.month;
+			if (compareStr(reverse(myItoa(temp, date)), acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			date = (accounts + i)->lasEdited.year;
+			if (compareStr(reverse(myItoa(temp, date)), acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			if (compareStr((accounts + i)->firstName, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			if (compareStr((accounts + i)->lastName, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+			if (compareStr((accounts + i)->patronymic, acc) == 0)
+			{
+				printAcc(accounts, arrSize, i);
+				continue;
+			}
+		}
+	}
+	free(temp);
 }
 
 Account* searchEmptyAcc(Account **accounts, int *arrSize)
@@ -235,102 +319,6 @@ Account* searchMinValue(Account *accounts, int arrSize)
 	}
 	return (accounts + index);
 }
-
-void searchAcc(Account *accounts, int arrSize) 
-{
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0); 
-
-	char acc[50] = "2";/*
-	printf("enter data: ");
-	scanf("%s", &acc);*/
-	Account **conc = (Account**)malloc(arrSize * sizeof(Account*));
-
-	for (int i = 0; i < arrSize; i++)
-	{
-		if (!(accounts + i)->isEmpty)
-		{
-			char temp[20];
-			int j = 0;
-			do {
-				temp[j++] = (accounts + i)->id % 10 + '0'; // тут конвертируем 
-			} while (((accounts + i)->id /= 10) > 0);	   // в перевернутую строку
-			temp[j] = '\0';
-			reverse(temp);	
-			if(compareStr(temp, acc) == 0)				   // тут вроде как ищем подстроку acc в строке temp, типа приблизительное значение
-			{											   // и если нашли, то возвращаем 0, если нет 1 в функции compareStr
-				
-				//printAcc(accounts, arrSize, i);			   // печатаем, ну, потому что так тоже пока сойдет, я понимаю что не надо так
-				//continue;								   // там дальше делаем это со всеми полями и, если есть хоть одно совпадение,
-			}											   // печатаем всю структуру и продолжаем идти по массиву структур
-
-			/*do {
-				temp[j++] = (accounts + i)->accNum % 10 + '0';
-			} while (((accounts + i)->accNum /= 10) > 0);
-			temp[j] = '\0';
-			reverse(temp);
-			if (compareStr(temp, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}
-
-			do {
-				temp[j++] = (accounts + i)->fundSum % 10 + '0';
-			} while (((accounts + i)->fundSum /= 10) > 0);
-			temp[j] = '\0';
-			reverse(temp);
-			if (compareStr(temp, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}
-
-			do {
-				temp[j++] = (accounts + i)->lasEdited.day % 10 + '0';
-			} while (((accounts + i)->lasEdited.day /= 10) > 0);
-			temp[j] = '\0';
-			reverse(temp);
-			if (compareStr(temp, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}
-			
-			do {
-				temp[j++] = (accounts + i)->lasEdited.month % 10 + '0';
-			} while (((accounts + i)->lasEdited.month /= 10) > 0);
-			temp[j] = '\0';
-			reverse(temp);
-			if (compareStr(temp, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}
-			
-			do {
-				temp[j++] = (accounts + i)->lasEdited.year % 10 + '0';
-			} while (((accounts + i)->lasEdited.year /= 10) > 0);
-			temp[j] = '\0';
-			reverse(temp);
-			if (compareStr(temp, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}*/
-		}
-	}
-
-	for (int i = 0; i < arrSize; i++)
-	{
-		printf("%d	", (accounts + i)->id);
-		printf("%llu	  ", (accounts + i)->accNum);
-		printf("%lu		", (accounts + i)->fundSum);
-
-	}
-
-	free(conc);
-} 
 
 void scanAcc(Account *acc)
 {
@@ -471,7 +459,7 @@ void menu(Account *accounts, int *arrSize)
 	printf("\t 6. close an account\n");
 	printf("\t 7. sort accounts\n");
 	printf("\t 8. find the minimum value\n");
-	printf("\t 9. search account(unavailable)\n");
+	printf("\t 9. search account\n");
 	printf("\t 0. exit\n\n");
 
 	int in = 0;
