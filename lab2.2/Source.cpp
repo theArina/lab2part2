@@ -19,7 +19,7 @@
 #include <windows.h>
 #include <ctime>
 
-#define nameLen 10
+#define nameLen 20
 
 typedef struct
 {
@@ -135,7 +135,7 @@ void printAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
-	printf("Id\tNum\t\t  Sum\t\tDate\t\tFull Name\n\n");
+	printf("Id\tAccount number\t  Sum\t\tDate\t\tFull name\n\n");
 	for (int i = 0; i < arrSize; i++)
 		printAcc(accounts, arrSize, (accounts + i)->id);
 	printf("\n");
@@ -153,12 +153,12 @@ void reverse(char *temp)
 
 int compareStr(char *temp, char *acc)
 {
-	int dif = strlen(temp) - strlen(acc);
-	for (int j = 0; j >= dif; j++)
+	for (int p = 0; temp[p] != '\0'; p++)
 	{
-		for (int y = 0; y < strlen(acc) && temp[y] == acc[y]; y++)
-			if (y == strlen(acc))
-				return 0;
+		int j = 0;
+		for (; acc[j] != '\0' && temp[j + p] != '\0' && temp[j + p] == acc[j]; j++);
+		if (acc[j] == '\0')
+			return 0;
 	}
 	return 1;
 }
@@ -189,10 +189,13 @@ Account* searchEmptyAcc(Account **accounts, int *arrSize)
 	}
 }
 
-Account* searchMinValue(Account *accounts, short field, int arrSize)
+Account* searchMinValue(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
+
+	int field = 0;
+	scanf("%d", &field);
 
 	int index = 0;
 	unsigned long long min = ULLONG_MAX;
@@ -238,9 +241,10 @@ void searchAcc(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0); 
 
-	char acc[50] = "1";/*
+	char acc[50] = "2";/*
 	printf("enter data: ");
 	scanf("%s", &acc);*/
+	Account **conc = (Account**)malloc(arrSize * sizeof(Account*));
 
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -252,14 +256,15 @@ void searchAcc(Account *accounts, int arrSize)
 				temp[j++] = (accounts + i)->id % 10 + '0'; // тут конвертируем 
 			} while (((accounts + i)->id /= 10) > 0);	   // в перевернутую строку
 			temp[j] = '\0';
-			reverse(temp);								   // собственно, переворачиваем
+			reverse(temp);	
 			if(compareStr(temp, acc) == 0)				   // тут вроде как ищем подстроку acc в строке temp, типа приблизительное значение
 			{											   // и если нашли, то возвращаем 0, если нет 1 в функции compareStr
-				printAcc(accounts, arrSize, i);			   // печатаем, ну, потому что так тоже пока сойдет, я понимаю что не надо так
+				
+				//printAcc(accounts, arrSize, i);			   // печатаем, ну, потому что так тоже пока сойдет, я понимаю что не надо так
 				//continue;								   // там дальше делаем это со всеми полями и, если есть хоть одно совпадение,
 			}											   // печатаем всю структуру и продолжаем идти по массиву структур
-/*
-			do {
+
+			/*do {
 				temp[j++] = (accounts + i)->accNum % 10 + '0';
 			} while (((accounts + i)->accNum /= 10) > 0);
 			temp[j] = '\0';
@@ -315,6 +320,16 @@ void searchAcc(Account *accounts, int arrSize)
 			}*/
 		}
 	}
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		printf("%d	", (accounts + i)->id);
+		printf("%llu	  ", (accounts + i)->accNum);
+		printf("%lu		", (accounts + i)->fundSum);
+
+	}
+
+	free(conc);
 } 
 
 void scanAcc(Account *acc)
@@ -395,10 +410,13 @@ void updateAcc(Account *accounts, int arrSize, int id)
 			scanAcc(accounts + i);	
 }
 
-void sortAccsBy(Account *accounts, short field, int arrSize)
+void sortAccsBy(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);   
+
+	int field = 0;
+	scanf("%d", &field);
 
 	for (int i = 0; i < arrSize - 1; i++)
 	{
@@ -442,6 +460,94 @@ void sortAccsBy(Account *accounts, short field, int arrSize)
 	}
 }
 
+void menu(Account *accounts, int *arrSize)
+{
+	printf("\t please, write a number to select an option\n\n");
+	printf("\t 1. show all accounts\n");
+	printf("\t 2. show account\n"); 
+	printf("\t 3. create new account\n");
+	printf("\t 4. edit account\n");
+	printf("\t 5. erase all account data\n");
+	printf("\t 6. close an account\n");
+	printf("\t 7. sort accounts\n");
+	printf("\t 8. find the minimum value\n");
+	printf("\t 9. search account(unavailable)\n");
+	printf("\t 0. exit\n\n");
+
+	int in = 0;
+	printf("\t ");
+	scanf("%d", &in);
+	int id = 0;
+	system("cls");
+
+	switch (in)
+	{
+	case 1:
+		printAccs(accounts, *arrSize);
+		break;
+
+	case 2:
+		printf("\t ");
+		scanf("%d", &id);
+		printAcc(accounts, *arrSize, id);
+		break;
+
+	case 3:
+		addAcc(accounts, arrSize);
+		break;
+
+	case 4:
+		printf("\t ");
+		scanf("%d", &id);
+		updateAcc(accounts, *arrSize, id);
+		break;
+
+	case 5:
+		printf("\t ");
+		scanf("%d", &id);
+		clearAcc(accounts, *arrSize, id);
+		break;
+
+	case 6:
+		printf("\t ");
+		scanf("%d", &id);
+		removeAcc(accounts, *arrSize, id);
+		break;
+
+	case 7:
+		sortAccsBy(accounts, *arrSize);
+		break;
+
+	case 8:
+		searchMinValue(accounts, *arrSize);
+		break;
+
+	case 9:
+		searchAcc(accounts, *arrSize);
+		break;
+
+	case 0:
+		break;
+	}
+	
+	printf("\t 1. back to menu\n");
+	printf("\t 0. exit\n\n");
+
+	int in2 = 0;
+	printf("\t ");
+	scanf("%d", &in2);
+	system("cls");
+
+	switch (in2)
+	{
+	case 1:
+		menu(accounts, arrSize);
+
+	case 0:
+		break;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int arrSize = 10;
@@ -451,9 +557,9 @@ int main(int argc, char **argv)
 	fillAccs(accounts, arrSize);
 	printf("Ok\n\n");
 	printAccs(accounts, arrSize);
-	
 	searchAcc(accounts, arrSize);
-
+	//menu(accounts, &arrSize);
+	
 	free(accounts);
 	return 0;
 }
