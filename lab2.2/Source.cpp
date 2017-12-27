@@ -74,7 +74,7 @@ void fillAccs(Account *accounts, int arrSize)
 	assert(accounts != NULL);
 	assert(arrSize > 0);
 
-	srand(time(NULL));
+	srand(0);
 
 	char fnames[] = "/Tom/Miles/Sam/Jenni/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
 	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
@@ -102,11 +102,12 @@ void fillAccs(Account *accounts, int arrSize)
 	free(name);
 }
 
-void printAcc(Account *accounts, int arrSize, int id)
+int printAcc(Account *accounts, int arrSize, int id)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
 
+	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 	{
 		if ((accounts + i)->id == id)
@@ -125,9 +126,13 @@ void printAcc(Account *accounts, int arrSize, int id)
 				printf("%s ", (accounts + i)->lastName);
 				printf("%s		", (accounts + i)->patronymic);
 				printf("\n");
+				flag = true;
 			}
 		}
 	}
+	if (!flag)
+		return 1;
+	return 0;
 }
 
 void printAccs(Account *accounts, int arrSize)
@@ -164,6 +169,23 @@ char* reverse(char *temp)
 	return temp;
 }
 
+char* combineStr(char *str, ...)
+{
+	char **p = &str;
+	*p++;
+	int i;
+
+	for (i = 0; *p != 0; *p++)
+	{
+		memcpy(&str[i], *p, strlen(*p));
+		i += strlen(*p);
+		str[i++] = ' ';
+	}
+
+	str[i] = '\0';
+	return str;
+}
+
 int compareStr(char *temp, char *acc)
 {
 	for (int p = 0; temp[p] != '\0'; p++)
@@ -181,11 +203,12 @@ void searchAcc(Account *accounts, int arrSize)
 	assert(accounts != NULL);
 	assert(arrSize > 0);
 
-	char acc[50] = "To";
-	printf("enter data: ");
+	char acc[50];
+	printf("\t enter data: ");
 	scanf("%s", &acc);
 
 	char *temp = (char*)malloc(sizeof(char) * 50);
+	char *tempName = (char*)malloc(sizeof(char) * nameLen * 3);
 
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -227,17 +250,9 @@ void searchAcc(Account *accounts, int arrSize)
 				printAcc(accounts, arrSize, i);
 				continue;
 			}
-			if (compareStr((accounts + i)->firstName, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}
-			if (compareStr((accounts + i)->lastName, acc) == 0)
-			{
-				printAcc(accounts, arrSize, i);
-				continue;
-			}
-			if (compareStr((accounts + i)->patronymic, acc) == 0)
+
+			if (compareStr(combineStr(tempName, (accounts + i)->firstName,
+				(accounts + i)->lastName, (accounts + i)->patronymic, 0), acc) == 0)
 			{
 				printAcc(accounts, arrSize, i);
 				continue;
@@ -245,6 +260,7 @@ void searchAcc(Account *accounts, int arrSize)
 		}
 	}
 	free(temp);
+	free(tempName);
 }
 
 Account* searchEmptyAcc(Account **accounts, int *arrSize)
@@ -356,11 +372,12 @@ void addAcc(Account *accounts, int *arrSize)
 	scanAcc(acc);
 }
 
-void clearAcc(Account *accounts, int arrSize, int id)
+int clearAcc(Account *accounts, int arrSize, int id)
 {
 	assert(accounts != NULL);
 	assert(arrSize > 0);
 
+	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 	{
 		if ((accounts + i)->id == id)
@@ -374,28 +391,46 @@ void clearAcc(Account *accounts, int arrSize, int id)
 			memcpy((accounts + id)->firstName, "0", 1);
 			memcpy((accounts + id)->lastName, "0", 1);
 			memcpy((accounts + id)->patronymic, "0", 1);
+			flag = true;
 		}
 	}
+	if (!flag)
+		return 1;
+	return 0;
 }
 
-void removeAcc(Account *accounts, int arrSize, int id)
+int removeAcc(Account *accounts, int arrSize, int id)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
+	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 		if ((accounts + i)->id == id)
+		{
 			(accounts + i)->isEmpty = true;
+			flag = true;
+		}
+	if (!flag)
+		return 1;
+	return 0;
 }
 
-void updateAcc(Account *accounts, int arrSize, int id)
+int updateAcc(Account *accounts, int arrSize, int id)
 {
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);
 
+	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 		if ((accounts + i)->id == id)
-			scanAcc(accounts + i);	
+		{
+			scanAcc(accounts + i);
+			flag = true;
+		}
+	if (!flag)
+		return 1;
+	return 0;
 }
 
 void sortAccsBy(Account *accounts, int arrSize)
@@ -403,6 +438,7 @@ void sortAccsBy(Account *accounts, int arrSize)
 	assert(accounts != NULL);                                                                                     
 	assert(arrSize > 0);   
 
+	printf("\n\t "); //todo
 	int field = 0;
 	scanf("%d", &field);
 
@@ -448,9 +484,9 @@ void sortAccsBy(Account *accounts, int arrSize)
 	}
 }
 
-void menu(Account *accounts, int *arrSize)
+int menu(Account *accounts, int *arrSize)
 {
-	printf("\t please, write a number to select an option\n\n");
+	printf("\n\t please, write a number to select an option\n\n");
 	printf("\t 1. show all accounts\n");
 	printf("\t 2. show account\n"); 
 	printf("\t 3. create new account\n");
@@ -475,9 +511,11 @@ void menu(Account *accounts, int *arrSize)
 		break;
 
 	case 2:
-		printf("\t ");
+		printf("\n\t you selected to show account");
+		printf("\n\t enter id: ");
 		scanf("%d", &id);
-		printAcc(accounts, *arrSize, id);
+		if(printAcc(accounts, *arrSize, id))
+			printf("\n\t account with this id doesn't exist\n");
 		break;
 
 	case 3:
@@ -485,25 +523,31 @@ void menu(Account *accounts, int *arrSize)
 		break;
 
 	case 4:
-		printf("\t ");
+		printf("\n\t you selected to edit account");
+		printf("\n\t enter id: ");
 		scanf("%d", &id);
-		updateAcc(accounts, *arrSize, id);
+		if(updateAcc(accounts, *arrSize, id))
+			printf("\n\t account with this id doesn't exist\n");
 		break;
 
 	case 5:
-		printf("\t ");
+		printf("\n\t you selected to erase all account data");
+		printf("\n\t enter id: ");
 		scanf("%d", &id);
-		clearAcc(accounts, *arrSize, id);
+		if(clearAcc(accounts, *arrSize, id))
+			printf("\n\t account with this id doesn't exist\n");
 		break;
 
 	case 6:
-		printf("\t ");
+		printf("\n\t you selected to close an account");
+		printf("\n\t enter id: ");
 		scanf("%d", &id);
-		removeAcc(accounts, *arrSize, id);
+		if(removeAcc(accounts, *arrSize, id))
+			printf("\n\t account with this id doesn't exist\n");
 		break;
 
 	case 7:
-		sortAccsBy(accounts, *arrSize);
+		sortAccsBy(accounts, *arrSize); //todo
 		break;
 
 	case 8:
@@ -515,9 +559,11 @@ void menu(Account *accounts, int *arrSize)
 		break;
 
 	case 0:
-		break;
+		system("cls");
+		return 0;
 	}
-	
+
+	printf("\n");
 	printf("\t 1. back to menu\n");
 	printf("\t 0. exit\n\n");
 
@@ -532,7 +578,8 @@ void menu(Account *accounts, int *arrSize)
 		menu(accounts, arrSize);
 
 	case 0:
-		break;
+		system("cls");
+		return 0;
 	}
 }
 
@@ -544,10 +591,10 @@ int main(int argc, char **argv)
 	printf("Filling accounts ... ");
 	fillAccs(accounts, arrSize);
 	printf("Ok\n\n");
-	printAccs(accounts, arrSize);
-	searchAcc(accounts, arrSize);
-	//menu(accounts, &arrSize);
-	
+	//printAcc(accounts, arrSize);
+	menu(accounts, &arrSize);
+	//searchAcc(accounts, arrSize);
+
 	free(accounts);
 	return 0;
 }
