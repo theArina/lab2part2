@@ -146,17 +146,6 @@ void printAccs(Account *accounts, int arrSize)
 	printf("\n");
 }
 
-char* myItoa(char *temp, int n)
-{
-	int j = 0;
-	do {
-		temp[j++] = n % 10 + '0';
-	} while ((n /= 10) > 0);
-	temp[j] = '\0';
-
-	return temp;
-}
-
 char* reverse(char *temp)
 {
 	for (int y = 0, c = 0, j = strlen(temp) - 1; y < j; y++, j--)
@@ -186,27 +175,15 @@ char* combineStr(char *str, ...)
 	return str;
 }
 
-int strInStr(char *temp, char *acc)
-{
-	for (int p = 0; temp[p] != '\0'; p++)
-	{
-		int j = 0;
-		for (; acc[j] != '\0' && temp[j + p] != '\0' && temp[j + p] == acc[j]; j++);
-		if (acc[j] == '\0')
-			return 0;
-	}
-	return 1;
-}
-
 int compareStrs(char *str, char *str2)
 {
 	int y;
-	for (y = 0; str[y] <= str2[y] && str[y] != '\0' && str2[y] != '\0'; y++);
-	if (str[y] != '\0' && str2[y] == '\0' || str[y] > str2[y])
+	for (y = 0; str[y] == str2[y] && str[y] != '\0' && str2[y] != '\0'; y++);
+	if (str[y] > str2[y] || (str[y] != '\0' && str2[y] == '\0'))
 		return 0;
 	return 1;
 }
-//todo
+
 int searchAcc(Account *accounts, int arrSize)
 {
 	assert(accounts != NULL);
@@ -226,50 +203,50 @@ int searchAcc(Account *accounts, int arrSize)
 		if (!(accounts + i)->isEmpty)
 		{
 			int id = (accounts + i)->id;
-			if (strInStr(reverse(myItoa(temp, id)), acc) == 0)
+			if (strstr(reverse(ultoa(id, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			unsigned long long num = (accounts + i)->accNum;
-			if (strInStr(reverse(myItoa(temp, num)), acc) == 0)
+			if (strstr(reverse(ultoa(num, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			unsigned long sum = (accounts + i)->fundSum;
-			if (strInStr(reverse(myItoa(temp, sum)), acc) == 0)
+			if (strstr(reverse(ultoa(sum, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			unsigned short date = (accounts + i)->lasEdited.day;
-			if (strInStr(reverse(myItoa(temp, date)), acc) == 0)
+			if (strstr(reverse(ultoa(date, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			date = (accounts + i)->lasEdited.month;
-			if (strInStr(reverse(myItoa(temp, date)), acc) == 0)
+			if (strstr(reverse(ultoa(date, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			date = (accounts + i)->lasEdited.year;
-			if (strInStr(reverse(myItoa(temp, date)), acc) == 0)
+			if (strstr(reverse(ultoa(date, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 
-			if (strInStr(combineStr(tempName, (accounts + i)->firstName,
-				(accounts + i)->lastName, (accounts + i)->patronymic, 0), acc) == 0)
+			if (strstr(combineStr(tempName, (accounts + i)->firstName,
+				(accounts + i)->lastName, (accounts + i)->patronymic, 0), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
@@ -495,9 +472,19 @@ void sortAccsBy(Account *accounts, int arrSize)
 				break;
 			case 4:
 
-				if(compareStrs((accounts + j)->firstName, (accounts + j)->firstName) == 0)
+				if(compareStrs((accounts + j)->firstName, (accounts + j + 1)->firstName) == 0)
 					needSwap = true;
 				break;
+			case 5:
+
+				if (compareStrs((accounts + j)->lastName, (accounts + j + 1)->lastName) == 0)
+					needSwap = true;
+				break; 
+			case 6:
+
+					if (compareStrs((accounts + j)->patronymic, (accounts + j + 1)->patronymic) == 0)
+						needSwap = true;
+					break;
 			}
 
 			if (needSwap)
@@ -586,6 +573,9 @@ int menu(Account *accounts, int *arrSize)
 		printf("\t 1. Account number\n");
 		printf("\t 2. Sum of fund\n");
 		printf("\t 3. Date\n");
+		printf("\t 4. First name\n");
+		printf("\t 5. Last name\n");
+		printf("\t 6. Patronymic\n");
 
 		sortAccsBy(accounts, *arrSize); 
 		printAccs(accounts, *arrSize);
