@@ -104,9 +104,6 @@ void fillAccs(Account *accounts, int arrSize)
 
 int printAcc(Account *accounts, int arrSize, int id)
 {
-	assert(accounts != NULL);
-	assert(arrSize > 0);
-
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -137,9 +134,6 @@ int printAcc(Account *accounts, int arrSize, int id)
 
 void printAccs(Account *accounts, int arrSize)
 {
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0);
-
 	printf("\n Id\tAccount number\t  Sum\t\tDate\t\tFull name\n\n");
 	for (int i = 0; i < arrSize; i++)
 		printAcc(accounts, arrSize, (accounts + i)->id);
@@ -186,9 +180,6 @@ int compareStrs(char *str, char *str2)
 
 int searchAcc(Account *accounts, int arrSize)
 {
-	assert(accounts != NULL);
-	assert(arrSize > 0);
-
 	char acc[50];
 	printf("\n\t ");
 	scanf("%s", &acc);
@@ -283,16 +274,11 @@ Account* searchEmptyAcc(Account **accounts, int *arrSize)
 			return NULL;
 	}
 	else
-	{
 		return (*accounts + i);
-	}
 }
 
 Account* searchMinValue(Account *accounts, int arrSize)
 {
-	assert(accounts != NULL);
-	assert(arrSize > 0);
-
 	printf("\n\t ");
 	int field = 0;
 	scanf("%d", &field);
@@ -363,9 +349,6 @@ void scanAcc(Account *acc)
 
 void addAcc(Account *accounts, int *arrSize)
 {
-	assert(accounts != NULL);
-	assert(arrSize > 0);
-
 	Account *acc = searchEmptyAcc(&accounts, arrSize);
 
 	acc->isEmpty = false;
@@ -375,9 +358,6 @@ void addAcc(Account *accounts, int *arrSize)
 
 int clearAcc(Account *accounts, int arrSize, int id)
 {
-	assert(accounts != NULL);
-	assert(arrSize > 0);
-
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 	{
@@ -385,13 +365,15 @@ int clearAcc(Account *accounts, int arrSize, int id)
 		{
 			(accounts + id)->accNum = 0;
 			(accounts + id)->fundSum = 0;
+
 			(accounts + id)->lasEdited.day = 0;
 			(accounts + id)->lasEdited.month = 0;
 			(accounts + id)->lasEdited.year = 0;
 			(accounts + id)->lasEdited.seconds = 0;
-			memcpy((accounts + id)->firstName, "0", 1);
-			memcpy((accounts + id)->lastName, "0", 1);
-			memcpy((accounts + id)->patronymic, "0", 1);
+
+			memcpy((accounts + id)->firstName, "\0", 1);
+			memcpy((accounts + id)->lastName, "\0", 1);
+			memcpy((accounts + id)->patronymic, "\0", 1);
 			flag = true;
 		}
 	}
@@ -402,9 +384,6 @@ int clearAcc(Account *accounts, int arrSize, int id)
 
 int removeAcc(Account *accounts, int arrSize, int id)
 {
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0);
-
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 		if ((accounts + i)->id == id)
@@ -419,9 +398,6 @@ int removeAcc(Account *accounts, int arrSize, int id)
 
 int updateAcc(Account *accounts, int arrSize, int id)
 {
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0);
-
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
 		if ((accounts + i)->id == id)
@@ -436,9 +412,6 @@ int updateAcc(Account *accounts, int arrSize, int id)
 
 void sortAccsBy(Account *accounts, int arrSize)
 {
-	assert(accounts != NULL);                                                                                     
-	assert(arrSize > 0);   
-
 	printf("\n\t "); 
 	int field = 0;
 	scanf("%d", &field);
