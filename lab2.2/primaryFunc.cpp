@@ -1,73 +1,22 @@
 //Часть 2, лаба 2, вариант 2.
 //Фамилия И.О., номер счета, сумма на счете, дата последнего изменения.
 /*
-1 - ввод элементов(полей) структуры +
-2 - вывод +
-3 - «очистка» структурированных переменных +
-4 - поиск свободной структурированной переменной +
+1 - ввод элементов(полей) структуры 
+2 - вывод 
+3 - «очистка» структурированных переменных 
+4 - поиск свободной структурированной переменной 
 5 - поиск в массиве структуры и минимальным значением заданного поля
-6 - поиск в массиве структур элемента с заданным значением поля или с наиболее близким к нему по значению +-
+6 - поиск в массиве структур элемента с заданным значением поля или с наиболее близким к нему по значению 
 7 - удаление заданного элемента
 8 - изменение(редактирование) заданного элемента
-9 - сортировка массива структур в порядке возрастания заданного поля +
+9 - сортировка массива структур в порядке возрастания заданного поля 
 	(при сортировке можно использовать тот факт, что в Си++ разрешается присваивание структурированных переменных)
 */
 
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
 #include <assert.h>
-#include <windows.h>
 #include <ctime>
-
-#define nameLen 20
-
-typedef struct
-{
-	unsigned short day;
-	unsigned short month;
-	unsigned short year;
-	unsigned long seconds;
-
-} Date;
-
-typedef struct
-{
-	bool isEmpty;
-	int id;
-	
-	unsigned long long accNum;
-	unsigned long fundSum;
-	Date lasEdited;
-	
-	char firstName[nameLen];
-	char lastName[nameLen];
-	char patronymic[nameLen];
-
-} Account;
-
-char* generateNames(char *str, char *name)
-{
-	int n = rand() % 10;
-	int i;
-
-	for (i = 0; i <= n; str++)
-		if (*str == '/')
-			i++;
-
-	for (i = 0; *str != '/'; str++, i++)
-		name[i] = *str;
-	name[i] = '\0';
-	
-	return name;
-}
-
-unsigned long secondsSince(Account *i)
-{
-	int secPerDay = 24 * 60 * 60;
-	return ((i->lasEdited.day * secPerDay) +
-		(i->lasEdited.month * secPerDay * 30) +
-		(i->lasEdited.year - 2000) * secPerDay * 365);
-}
+#include "Source.h"
 
 void fillAccs(Account *accounts, int arrSize)
 {
@@ -140,44 +89,6 @@ void printAccs(Account *accounts, int arrSize)
 	printf("\n");
 }
 
-char* reverse(char *temp)
-{
-	for (int y = 0, c = 0, j = strlen(temp) - 1; y < j; y++, j--)
-	{
-		c = temp[y];
-		temp[y] = temp[j];
-		temp[j] = c;
-	}
-
-	return temp;
-}
-
-char* combineStr(char *str, ...)
-{
-	char **p = &str;
-	*p++;
-	int i;
-
-	for (i = 0; *p != 0; *p++)
-	{
-		memcpy(&str[i], *p, strlen(*p));
-		i += strlen(*p);
-		str[i++] = ' ';
-	}
-
-	str[i] = '\0';
-	return str;
-}
-
-int compareStrs(char *str, char *str2)
-{
-	int y;
-	for (y = 0; str[y] == str2[y] && str[y] != '\0' && str2[y] != '\0'; y++);
-	if (str[y] > str2[y] || (str[y] != '\0' && str2[y] == '\0'))
-		return 0;
-	return 1;
-}
-
 int searchAcc(Account *accounts, int arrSize)
 {
 	char acc[50];
@@ -194,42 +105,42 @@ int searchAcc(Account *accounts, int arrSize)
 		if (!(accounts + i)->isEmpty)
 		{
 			int id = (accounts + i)->id;
-			if (strstr(reverse(ultoa(id, temp, 10)), acc) != NULL)
+			if (strstr(reverse(_ultoa(id, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			unsigned long long num = (accounts + i)->accNum;
-			if (strstr(reverse(ultoa(num, temp, 10)), acc) != NULL)
+			if (strstr(reverse(_ultoa(num, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			unsigned long sum = (accounts + i)->fundSum;
-			if (strstr(reverse(ultoa(sum, temp, 10)), acc) != NULL)
+			if (strstr(reverse(_ultoa(sum, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			unsigned short date = (accounts + i)->lasEdited.day;
-			if (strstr(reverse(ultoa(date, temp, 10)), acc) != NULL)
+			if (strstr(reverse(_ultoa(date, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			date = (accounts + i)->lasEdited.month;
-			if (strstr(reverse(ultoa(date, temp, 10)), acc) != NULL)
+			if (strstr(reverse(_ultoa(date, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
 				continue;
 			}
 			date = (accounts + i)->lasEdited.year;
-			if (strstr(reverse(ultoa(date, temp, 10)), acc) != NULL)
+			if (strstr(reverse(_ultoa(date, temp, 10)), acc) != NULL)
 			{
 				printAcc(accounts, arrSize, i);
 				flag = true;
@@ -469,145 +380,4 @@ void sortAccsBy(Account *accounts, int arrSize)
 			}
 		}
 	}
-}
-
-int menu(Account *accounts, int *arrSize)
-{
-	printf("\n\t please, write a number to select an option\n\n");
-	printf("\t 1. show all accounts\n");
-	printf("\t 2. show account\n"); 
-	printf("\t 3. create new account\n");
-	printf("\t 4. edit account\n");
-	printf("\t 5. erase all account data\n");
-	printf("\t 6. close an account\n");
-	printf("\t 7. sort accounts\n");
-	printf("\t 8. find the minimum value\n");
-	printf("\t 9. find an account\n");
-	printf("\t 0. exit\n\n");
-
-	int in = 0;
-	printf("\t ");
-	scanf("%d", &in);
-	int id = 0;
-	system("cls");
-
-	switch (in)
-	{
-	case 1:
-		printAccs(accounts, *arrSize);
-		break;
-
-	case 2:
-		printf("\n\t you selected to show an account");
-		printf("\n\t enter id: ");
-		scanf("%d", &id);
-		printf("\n");
-		if(printAcc(accounts, *arrSize, id))
-			printf("\n\t account with this id doesn't exist\n");
-		break;
-
-	case 3:
-		printf("\n\t you selected to create a new account");
-		addAcc(accounts, arrSize);
-		printf("\n\t the account has been created successfully\n");
-		break;
-
-	case 4:
-		printf("\n\t you selected to edit account");
-		printf("\n\t enter id: ");
-		scanf("%d", &id);
-		if(updateAcc(accounts, *arrSize, id))
-			printf("\n\t account with this id doesn't exist\n");
-		printf("\n\t the account data has been changed successfully\n");
-		break;
-
-	case 5:
-		printf("\n\t you selected to erase all account data");
-		printf("\n\t enter id: ");
-		scanf("%d", &id);
-		if(clearAcc(accounts, *arrSize, id))
-			printf("\n\t account with this id doesn't exist\n");
-		printf("\n\t all the account data has been removed successfully\n");
-		break;
-
-	case 6:
-		printf("\n\t you selected to close an account");
-		printf("\n\t enter id: ");
-		scanf("%d", &id);
-		if(removeAcc(accounts, *arrSize, id))
-			printf("\n\t account with this id doesn't exist\n");
-		printf("\n\t the account has been closed successfully\n");
-		break;
-
-	case 7:
-		printf("\n\t you selected to sort accounts");
-		printf("\n\t write a number to select by which data you want to sort\n\n");
-		printf("\t 0. Id\n");
-		printf("\t 1. Account number\n");
-		printf("\t 2. Sum of fund\n");
-		printf("\t 3. Date\n");
-		printf("\t 4. First name\n");
-		printf("\t 5. Last name\n");
-		printf("\t 6. Patronymic\n");
-
-		sortAccsBy(accounts, *arrSize); 
-		printAccs(accounts, *arrSize);
-		break;
-
-	case 8:
-		printf("\n\t you selected to find the minimum value");
-		printf("\n\t write a number to select in which data\n\n");
-		printf("\t 0. Id\n");
-		printf("\t 1. Account number\n");
-		printf("\t 2. Sum of fund\n");
-		printf("\t 3. Date\n");
-
-		printAcc(accounts, *arrSize, searchMinValue(accounts, *arrSize)->id);
-		break;
-
-	case 9:
-		printf("\n\t you selected to find an account");
-		printf("\n\t enter data: \n");
-		if (searchAcc(accounts, *arrSize))
-			printf("\t no matches found\n");
-		break;
-
-	case 0:
-		system("cls");
-		return 0;
-	}
-
-	printf("\n");
-	printf("\t 1. back to menu\n");
-	printf("\t 0. exit\n\n");
-
-	int in2 = 0;
-	printf("\t ");
-	scanf("%d", &in2);
-	system("cls");
-
-	switch (in2)
-	{
-	case 1:
-		menu(accounts, arrSize);
-
-	case 0:
-		system("cls");
-		return 0;
-	}
-}
-
-int main(int argc, char **argv)
-{
-	int arrSize = 10;
-	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
-
-	printf("Filling accounts ... ");
-	fillAccs(accounts, arrSize);
-	printf("Ok\n\n");
-	//printAcc(accounts, arrSize);
-	menu(accounts, &arrSize);
-	
-	free(accounts);
-	return 0;
 }
