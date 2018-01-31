@@ -15,8 +15,8 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <assert.h>
-#include <ctime>
-#include "Source.h"
+#include <time.h>
+#include "Header.h"
 
 void fillAccs(Account *accounts, int arrSize)
 {
@@ -51,7 +51,101 @@ void fillAccs(Account *accounts, int arrSize)
 	free(name);
 }
 
-int printAcc(Account *accounts, int arrSize, int id)
+int writeFile(Account *accounts, int arrSize, int id)
+{
+	FILE * ptrFile = fopen("accounts.txt", "a+");
+
+	if (id == NULL)
+		return 1;
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		if ((accounts + i)->id == id)
+		{
+			if ((accounts + i)->isEmpty == false)
+			{
+				fprintf(ptrFile, " %d  ", (accounts + i)->id);
+				fprintf(ptrFile, "%llu\t", (accounts + i)->accNum);
+				fprintf(ptrFile, "%lu\t", (accounts + i)->fundSum);
+
+				fprintf(ptrFile, "%u.", (accounts + i)->lasEdited.day);
+				fprintf(ptrFile, "%u.", (accounts + i)->lasEdited.month);
+				fprintf(ptrFile, "%u\t", (accounts + i)->lasEdited.year);
+
+				fprintf(ptrFile, "%s ", (accounts + i)->firstName);
+				fprintf(ptrFile, "%s ", (accounts + i)->lastName);
+				fprintf(ptrFile, "%s\n", (accounts + i)->patronymic);
+			}
+		}
+	}	
+
+	fclose(ptrFile);
+	return 0;
+}
+
+int readFile(Account *acc)
+{
+	FILE * ptrFile = fopen("accounts.txt", "r");
+
+	if (ptrFile == NULL)
+		return 1;
+
+	for (int i = 0, j = 0; i < 8; i++)
+	{
+		while (ptrFile[j] == ' ') //ну вот
+			j++;
+		switch (i)
+		{
+		case 0:
+			fscanf(ptrFile + j, "%llu", &acc->accNum);
+			break; 
+		case 1:
+			fscanf(ptrFile + j, "%lu", &acc->fundSum);
+			break;
+		case 2:
+			fscanf(ptrFile + j, "%hu", &acc->lasEdited.day);
+			break;
+		case 3:
+			fscanf(ptrFile + j, "%hu", &acc->lasEdited.month);
+			break;
+		case 4:
+			fscanf(ptrFile + j, "%hu", &acc->lasEdited.year);
+			break;
+		case 5:
+			fscanf(ptrFile + j, "%s", &acc->firstName);
+			break;
+		case 6:
+			fscanf(ptrFile + j, "%s", &acc->lastName);
+			break;
+		case 7:
+			fscanf(ptrFile + j, "%s", &acc->patronymic);
+			break;
+		default:
+			break;
+		}
+	}
+	acc->lasEdited.seconds = secondsSince(acc);
+	
+	fclose(ptrFile);
+	return 0;
+}
+
+void addFAcc(Account *accounts, int *arrSize)
+{
+	Account *acc = searchEmptyAcc(&accounts, arrSize);
+
+	acc->isEmpty = false;
+
+	readFile(acc);
+}
+
+//void writeFileAll(Account *accounts, int arrSize)
+//{
+//	for (int i = 0; i < arrSize; i++)
+//		inFileAcc(accounts, arrSize, (accounts + i)->id);
+//}
+
+bool printAcc(Account *accounts, int arrSize, int id)
 {
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
@@ -64,9 +158,9 @@ int printAcc(Account *accounts, int arrSize, int id)
 				printf("%llu	  ", (accounts + i)->accNum);
 				printf("%lu		", (accounts + i)->fundSum);
 
-				printf("%u.", (accounts + i)->lasEdited.day);
-				printf("%u.", (accounts + i)->lasEdited.month);
-				printf("%u\t", (accounts + i)->lasEdited.year);
+				printf("%hu.", (accounts + i)->lasEdited.day);
+				printf("%hu.", (accounts + i)->lasEdited.month);
+				printf("%hu\t", (accounts + i)->lasEdited.year);
 
 				printf("%s ", (accounts + i)->firstName);
 				printf("%s ", (accounts + i)->lastName);
@@ -76,9 +170,8 @@ int printAcc(Account *accounts, int arrSize, int id)
 			}
 		}
 	}
-	if (!flag)
-		return 1;
-	return 0;
+
+	return !flag;
 }
 
 void printAccs(Account *accounts, int arrSize)
@@ -89,7 +182,7 @@ void printAccs(Account *accounts, int arrSize)
 	printf("\n");
 }
 
-int searchAcc(Account *accounts, int arrSize)
+bool searchAcc(Account *accounts, int arrSize)
 {
 	char acc[50];
 	printf("\n\t ");
@@ -159,9 +252,7 @@ int searchAcc(Account *accounts, int arrSize)
 	free(temp);
 	free(tempName);
 
-	if (!flag)
-		return 1;
-	return 0;
+	return !flag;
 }
 
 Account* searchEmptyAcc(Account **accounts, int *arrSize)
@@ -267,7 +358,7 @@ void addAcc(Account *accounts, int *arrSize)
 	scanAcc(acc);
 }
 
-int clearAcc(Account *accounts, int arrSize, int id)
+bool clearAcc(Account *accounts, int arrSize, int id)
 {
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
@@ -288,12 +379,11 @@ int clearAcc(Account *accounts, int arrSize, int id)
 			flag = true;
 		}
 	}
-	if (!flag)
-		return 1;
-	return 0;
+
+	return !flag;
 }
 
-int removeAcc(Account *accounts, int arrSize, int id)
+bool removeAcc(Account *accounts, int arrSize, int id)
 {
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
@@ -302,12 +392,11 @@ int removeAcc(Account *accounts, int arrSize, int id)
 			(accounts + i)->isEmpty = true;
 			flag = true;
 		}
-	if (!flag)
-		return 1;
-	return 0;
+
+	return !flag;
 }
 
-int updateAcc(Account *accounts, int arrSize, int id)
+bool updateAcc(Account *accounts, int arrSize, int id)
 {
 	bool flag = false;
 	for (int i = 0; i < arrSize; i++)
@@ -316,9 +405,8 @@ int updateAcc(Account *accounts, int arrSize, int id)
 			scanAcc(accounts + i);
 			flag = true;
 		}
-	if (!flag)
-		return 1;
-	return 0;
+
+	return !flag;
 }
 
 void sortAccsBy(Account *accounts, int arrSize)

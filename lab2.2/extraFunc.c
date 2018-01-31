@@ -1,4 +1,4 @@
-#include "Source.h"
+#include "Header.h"
 
 char* generateNames(char *str, char *name)
 {

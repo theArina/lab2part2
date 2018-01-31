@@ -1,18 +1,19 @@
 #pragma once
 #include <windows.h>
 #include <stdio.h>
+#include <stdbool.h>
 #define nameLen 20
 
-struct Date
+typedef struct
 {
 	unsigned short day;
 	unsigned short month;
 	unsigned short year;
 	unsigned long seconds;
 
-};
+}Date;
 
-struct Account
+typedef struct
 {
 	bool isEmpty;
 	int id;
@@ -25,23 +26,44 @@ struct Account
 	char lastName[nameLen];
 	char patronymic[nameLen];
 
-};
+}Account;
 
 char* generateNames(char *, char *);
+
 unsigned long secondsSince(Account *);
+
 void fillAccs(Account *, int);
-int printAcc(Account *, int , int);
+
+int inFileAcc(Account *, int, int);
+
+void inFileAccs(Account *, int);
+
+bool printAcc(Account *, int , int);
+
 void printAccs(Account *, int);
+
 char* reverse(char *);
+
 char* combineStr(char *, ...);
+
 int compareStrs(char *, char *);
-int searchAcc(Account *, int);
+
+bool searchAcc(Account *, int);
+
 Account* searchEmptyAcc(Account **, int *);
+
 Account* searchMinValue(Account *, int);
+
 void scanAcc(Account *);
+
 void addAcc(Account *, int *);
-int clearAcc(Account *, int , int);
-int removeAcc(Account *, int , int);
-int updateAcc(Account *, int , int);
+
+bool clearAcc(Account *, int , int);
+
+bool removeAcc(Account *, int , int);
+
+bool updateAcc(Account *, int , int);
+
 void sortAccsBy(Account *, int);
+
 int menu(Account *, int *);

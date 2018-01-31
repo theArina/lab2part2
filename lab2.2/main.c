@@ -1,4 +1,4 @@
-#include "Source.h"
+#include "Header.h"
 
 int main(int argc, char **argv)
 {
@@ -10,6 +10,7 @@ int main(int argc, char **argv)
 	printf("Ok\n\n");
 
 	menu(accounts, &arrSize);
+	//inFileAccs(accounts, arrSize);
 
 	free(accounts);
 	return 0;
