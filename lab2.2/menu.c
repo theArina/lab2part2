@@ -12,6 +12,7 @@ int menu(Account *accounts, int *arrSize)
 	printf("\t 7. sort accounts\n");
 	printf("\t 8. find the minimum value\n");
 	printf("\t 9. find an account\n");
+	printf("\t 10. upload account from the file\n");
 	printf("\t 0. exit\n\n");
 
 	int in = 0;
@@ -99,6 +100,15 @@ int menu(Account *accounts, int *arrSize)
 		printf("\n\t enter data: \n");
 		if (searchAcc(accounts, *arrSize))
 			printf("\t no matches found\n");
+		break;
+
+	case 10:
+		printf("\n\t upload account from the file");
+		printf("\n\t enter id: ");
+		scanf("%d", &id);
+		if (addFAcc(accounts, *arrSize, id))
+			printf("\n\t there is no account with this id in the file\n");
+		printAcc(accounts, *arrSize, id);
 		break;
 
 	case 0:

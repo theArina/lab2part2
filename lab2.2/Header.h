@@ -1,4 +1,5 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -34,11 +35,15 @@ unsigned long secondsSince(Account *);
 
 void fillAccs(Account *, int);
 
-int inFileAcc(Account *, int, int);
+int writeFile(Account *, int, int);
 
-void inFileAccs(Account *, int);
+void moveInFile(FILE **, char, int *);
 
-bool printAcc(Account *, int , int);
+int readFile(Account *, int);
+
+int addFAcc(Account *, int *, int);
+
+bool printAcc(Account *, int, int);
 
 void printAccs(Account *, int);
 
@@ -58,11 +63,11 @@ void scanAcc(Account *);
 
 void addAcc(Account *, int *);
 
-bool clearAcc(Account *, int , int);
+bool clearAcc(Account *, int, int);
 
-bool removeAcc(Account *, int , int);
+bool removeAcc(Account *, int, int);
 
-bool updateAcc(Account *, int , int);
+bool updateAcc(Account *, int, int);
 
 void sortAccsBy(Account *, int);
 

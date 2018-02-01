@@ -13,49 +13,14 @@
 	(при сортировке можно использовать тот факт, что в Си++ разрешается присваивание структурированных переменных)
 */
 
-#define _CRT_SECURE_NO_WARNINGS
-#include <assert.h>
-#include <time.h>
 #include "Header.h"
-
-void fillAccs(Account *accounts, int arrSize)
-{
-	assert(accounts != NULL);
-	assert(arrSize > 0);
-
-	srand(0);
-
-	char fnames[] = "/Tom/Miles/Sam/Jenni/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
-	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
-	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
-
-	char *name = (char*)malloc(sizeof(char) * nameLen);
-
-	for (int i = 0; i < arrSize; i++)
-	{
-		(accounts + i)->id = i;
-		(accounts + i)->isEmpty = false;
-		(accounts + i)->accNum = (unsigned long long)rand() % 9999 * 1000000 + rand() % 100000;
-		(accounts + i)->fundSum = (unsigned long)rand() % 10000000 + 1000;
-
-		(accounts + i)->lasEdited.day = (unsigned short)rand() % 30 + 1;
-		(accounts + i)->lasEdited.month = (unsigned short)rand() % 11 + 1;
-		(accounts + i)->lasEdited.year = (unsigned short)rand() % 7 + 2010;
-		(accounts + i)->lasEdited.seconds = secondsSince(accounts + i);
-
-		memcpy((accounts + i)->firstName, generateNames(fnames, name), nameLen); 
-		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
-		memcpy((accounts + i)->patronymic, generateNames(ptrs, name), nameLen); 
-	}
-
-	free(name);
-}
+#include <time.h>
 
 int writeFile(Account *accounts, int arrSize, int id)
 {
 	FILE * ptrFile = fopen("accounts.txt", "a+");
 
-	if (id == NULL)
+	if ((accounts + id)->isEmpty == true)
 		return 1;
 
 	for (int i = 0; i < arrSize; i++)
@@ -83,67 +48,62 @@ int writeFile(Account *accounts, int arrSize, int id)
 	return 0;
 }
 
-int readFile(Account *acc)
+int readFile(Account *acc, int id)
 {
 	FILE * ptrFile = fopen("accounts.txt", "r");
 
 	if (ptrFile == NULL)
 		return 1;
 
-	for (int i = 0, j = 0; i < 8; i++)
+	char temp = ' ';
+	int j = 0;
+
+	for (int i = 0, fId = 0; fId != id; i++)
 	{
-		while (ptrFile[j] == ' ') //ну вот
-			j++;
-		switch (i)
-		{
-		case 0:
-			fscanf(ptrFile + j, "%llu", &acc->accNum);
-			break; 
-		case 1:
-			fscanf(ptrFile + j, "%lu", &acc->fundSum);
-			break;
-		case 2:
-			fscanf(ptrFile + j, "%hu", &acc->lasEdited.day);
-			break;
-		case 3:
-			fscanf(ptrFile + j, "%hu", &acc->lasEdited.month);
-			break;
-		case 4:
-			fscanf(ptrFile + j, "%hu", &acc->lasEdited.year);
-			break;
-		case 5:
-			fscanf(ptrFile + j, "%s", &acc->firstName);
-			break;
-		case 6:
-			fscanf(ptrFile + j, "%s", &acc->lastName);
-			break;
-		case 7:
-			fscanf(ptrFile + j, "%s", &acc->patronymic);
-			break;
-		default:
-			break;
-		}
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%d", fId);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%llu", &acc->accNum);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%lu", &acc->fundSum);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%hu", &acc->lasEdited.day);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%hu", &acc->lasEdited.month);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%hu", &acc->lasEdited.year);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%s", &acc->firstName);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%s", &acc->lastName);
+
+		moveInFile(&ptrFile, temp, &j);
+		fscanf(ptrFile, "%s", &acc->patronymic);
 	}
-	acc->lasEdited.seconds = secondsSince(acc);
 	
+	acc->lasEdited.seconds = secondsSince(acc);
+
 	fclose(ptrFile);
 	return 0;
 }
 
-void addFAcc(Account *accounts, int *arrSize)
+int addFAcc(Account *accounts, int *arrSize, int id)
 {
 	Account *acc = searchEmptyAcc(&accounts, arrSize);
 
 	acc->isEmpty = false;
 
-	readFile(acc);
-}
+	return readFile(acc, id);
 
-//void writeFileAll(Account *accounts, int arrSize)
-//{
-//	for (int i = 0; i < arrSize; i++)
-//		inFileAcc(accounts, arrSize, (accounts + i)->id);
-//}
+	bool printAcc(accounts, arrSize, id);
+}
 
 bool printAcc(Account *accounts, int arrSize, int id)
 {

@@ -1,4 +1,57 @@
 #include "Header.h"
+#include <assert.h>
+
+void fillAccs(Account *accounts, int arrSize)
+{
+	assert(accounts != NULL);
+	assert(arrSize > 0);
+
+	srand(0);
+
+	char fnames[] = "/Tom/Miles/Sam/Jenni/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
+	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
+	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
+
+	char *name = (char*)malloc(sizeof(char) * nameLen);
+
+	for (int i = 0; i < arrSize; i++)
+	{
+		(accounts + i)->id = i;
+		(accounts + i)->isEmpty = false;
+		(accounts + i)->accNum = (unsigned long long)rand() % 9999 * 1000000 + rand() % 100000;
+		(accounts + i)->fundSum = (unsigned long)rand() % 10000000 + 1000;
+
+		(accounts + i)->lasEdited.day = (unsigned short)rand() % 30 + 1;
+		(accounts + i)->lasEdited.month = (unsigned short)rand() % 11 + 1;
+		(accounts + i)->lasEdited.year = (unsigned short)rand() % 7 + 2010;
+		(accounts + i)->lasEdited.seconds = secondsSince(accounts + i);
+
+		memcpy((accounts + i)->firstName, generateNames(fnames, name), nameLen);
+		memcpy((accounts + i)->lastName, generateNames(lnames, name), nameLen);
+		memcpy((accounts + i)->patronymic, generateNames(ptrs, name), nameLen);
+	}
+
+	free(name);
+}
+
+void moveInFile(FILE **ptrFile, char temp, int *j)
+{
+	fscanf(*ptrFile, "%c", temp);
+
+	while(temp != ' ') 
+	{
+		*j++;
+		fseek(*ptrFile, *j, SEEK_SET);
+		fscanf(*ptrFile, "%c", temp);
+	} 
+
+	while (temp == ' ')
+	{
+		*j++;
+		fscanf(*ptrFile, "%c", temp);
+		fseek(*ptrFile, *j, SEEK_SET);
+	}
+}
 
 char* generateNames(char *str, char *name)
 {
