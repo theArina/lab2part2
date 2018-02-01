@@ -102,14 +102,14 @@ int menu(Account *accounts, int *arrSize)
 			printf("\t no matches found\n");
 		break;
 
-	case 10:
+	/*case 10:
 		printf("\n\t upload account from the file");
 		printf("\n\t enter id: ");
 		scanf("%d", &id);
-		if (addFAcc(accounts, *arrSize, id))
+		if (addFileAcc(accounts, *arrSize, id))
 			printf("\n\t there is no account with this id in the file\n");
 		printAcc(accounts, *arrSize, id);
-		break;
+		break;*/
 
 	case 0:
 		system("cls");

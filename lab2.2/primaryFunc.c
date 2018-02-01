@@ -48,61 +48,47 @@ int writeFile(Account *accounts, int arrSize, int id)
 	return 0;
 }
 
-int readFile(Account *acc, int id)
+int readFileAccs(Account *accounts, int arrSize)
 {
 	FILE * ptrFile = fopen("accounts.txt", "r");
 
-	if (ptrFile == NULL)
+	if (feof(ptrFile) != 0)
 		return 1;
 
 	char temp = ' ';
 	int j = 0;
 
-	for (int i = 0, fId = 0; fId != id; i++)
+	for (int i = 0; i < arrSize; i++)
 	{
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%d", fId);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%llu", &(accounts + i)->accNum);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%llu", &acc->accNum);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%lu", &(accounts + i)->fundSum);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%lu", &acc->fundSum);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%hu", &(accounts + i)->lasEdited.day);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%hu", &acc->lasEdited.day);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%hu", &(accounts + i)->lasEdited.month);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%hu", &acc->lasEdited.month);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%hu", &(accounts + i)->lasEdited.year);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%hu", &acc->lasEdited.year);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%s", &(accounts + i)->firstName);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%s", &acc->firstName);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%s", &(accounts + i)->lastName);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%s", &acc->lastName);
+		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%s", &(accounts + i)->patronymic);
 
-		moveInFile(&ptrFile, temp, &j);
-		fscanf(ptrFile, "%s", &acc->patronymic);
+		(accounts + i)->lasEdited.seconds = secondsSince(accounts + i);
 	}
-	
-	acc->lasEdited.seconds = secondsSince(acc);
 
 	fclose(ptrFile);
 	return 0;
-}
-
-int addFAcc(Account *accounts, int *arrSize, int id)
-{
-	Account *acc = searchEmptyAcc(&accounts, arrSize);
-
-	acc->isEmpty = false;
-
-	return readFile(acc, id);
-
-	bool printAcc(accounts, arrSize, id);
 }
 
 bool printAcc(Account *accounts, int arrSize, int id)

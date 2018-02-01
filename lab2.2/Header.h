@@ -37,11 +37,9 @@ void fillAccs(Account *, int);
 
 int writeFile(Account *, int, int);
 
-void moveInFile(FILE **, char, int *);
+int moveInFile(FILE **, char);
 
-int readFile(Account *, int);
-
-int addFAcc(Account *, int *, int);
+int readFileAccs(Account *, int);
 
 bool printAcc(Account *, int, int);
 

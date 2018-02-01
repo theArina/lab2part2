@@ -34,23 +34,26 @@ void fillAccs(Account *accounts, int arrSize)
 	free(name);
 }
 
-void moveInFile(FILE **ptrFile, char temp, int *j)
+int moveInFile(FILE **ptrFile, char temp)
 {
-	fscanf(*ptrFile, "%c", temp);
+	fscanf(*ptrFile, "%c", &temp);
+
+	int j = 0;
 
 	while(temp != ' ') 
 	{
-		*j++;
-		fseek(*ptrFile, *j, SEEK_SET);
-		fscanf(*ptrFile, "%c", temp);
+		j++;
+		fseek(*ptrFile, j, SEEK_CUR);
+		fscanf(*ptrFile, "%c", &temp);
 	} 
 
-	while (temp == ' ')
+	/*while (temp == ' ')
 	{
-		*j++;
-		fscanf(*ptrFile, "%c", temp);
-		fseek(*ptrFile, *j, SEEK_SET);
-	}
+		j++;
+		fseek(*ptrFile, j, SEEK_CUR);
+		fscanf(*ptrFile, "%c", &temp);
+	}*/
+	return j;
 }
 
 char* generateNames(char *str, char *name)

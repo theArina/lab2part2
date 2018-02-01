@@ -3,32 +3,16 @@
 int main(int argc, char **argv)
 {
 	FILE * f = fopen("accounts.txt", "r");
-	char temp[200];
-	int i = 0, j = 0;
+	int arrSize = 0;
+	fscanf(f, "%d", &arrSize);
+	fclose(f);
 
-	fscanf(f, "%s", temp);
-	printf("%s\n", temp);
+	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
-	fseek(f, 93, SEEK_SET);
-
-	fscanf(f, "%s", temp);
-	//while (temp != EOF)
-	//{
-	//	if (temp == '\n')
-	//		i++;
-	//	j++;
-	//	fseek(f, j, SEEK_SET);
-	//	fscanf(f, "%c", temp);
-	//}
-	//fclose(f);
-	//int arrSize = 10;
-	printf("%s\n", temp);
-	//Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
-
+	readFileAccs(accounts, arrSize);
 	//menu(accounts, &arrSize);
-	//addFAcc(accounts, arrSize, 1);
 
 	_getch();
-	//free(accounts);
+	free(accounts);
 	return 0;
 }
