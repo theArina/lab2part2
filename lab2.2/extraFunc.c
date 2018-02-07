@@ -10,7 +10,7 @@ void fillAccs(Account *accounts, int arrSize)
 
 	char fnames[] = "/Tom/Miles/Sam/Jenni/Morty/Emma/Elizabeth/Jack/Luna/Eve/";
 	char lnames[] = "/Jonas/Drake/Urie/Lerman/Toro/Way/Iero/Watson/Colby/Smith/";
-	char ptrs[] = "/ /Third/Second/ / /Fifth/Fourth/ /Second/ /";
+	char ptrs[] = "/-/Third/Second/-/-/Fifth/Fourth/-/Second/-/";
 
 	char *name = (char*)malloc(sizeof(char) * nameLen);
 
@@ -32,28 +32,6 @@ void fillAccs(Account *accounts, int arrSize)
 	}
 
 	free(name);
-}
-
-int moveInFile(FILE **ptrFile, char temp)
-{
-	fscanf(*ptrFile, "%c", &temp);
-
-	int j = 0;
-
-	while(temp != ' ') 
-	{
-		j++;
-		fseek(*ptrFile, j, SEEK_CUR);
-		fscanf(*ptrFile, "%c", &temp);
-	} 
-
-	/*while (temp == ' ')
-	{
-		j++;
-		fseek(*ptrFile, j, SEEK_CUR);
-		fscanf(*ptrFile, "%c", &temp);
-	}*/
-	return j;
 }
 
 char* generateNames(char *str, char *name)

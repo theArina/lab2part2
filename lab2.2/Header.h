@@ -37,8 +37,6 @@ void fillAccs(Account *, int);
 
 int writeFile(Account *, int, int);
 
-int moveInFile(FILE **, char);
-
 int readFileAccs(Account *, int);
 
 bool printAcc(Account *, int, int);

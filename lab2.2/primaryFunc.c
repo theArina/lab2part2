@@ -18,7 +18,7 @@
 
 int writeFile(Account *accounts, int arrSize, int id)
 {
-	FILE * ptrFile = fopen("accounts.txt", "a+");
+	FILE * ptrFile = fopen("accounts.txt", "a");
 
 	if ((accounts + id)->isEmpty == true)
 		return 1;
@@ -58,32 +58,38 @@ int readFileAccs(Account *accounts, int arrSize)
 	char temp = ' ';
 	int j = 0;
 
+	char str[20];
+	
 	for (int i = 0; i < arrSize; i++)
 	{
-		moveInFile(&ptrFile, temp);
+		fscanf(ptrFile, "%d", &(accounts + i)->id);
+		fseek(ptrFile, 1, SEEK_CUR);
+
 		fscanf(ptrFile, "%llu", &(accounts + i)->accNum);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%lu", &(accounts + i)->fundSum);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%hu", &(accounts + i)->lasEdited.day);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%hu", &(accounts + i)->lasEdited.month);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%hu", &(accounts + i)->lasEdited.year);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%s", &(accounts + i)->firstName);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%s", &(accounts + i)->lastName);
+		fseek(ptrFile, 1, SEEK_CUR);
 
-		moveInFile(&ptrFile, temp);
 		fscanf(ptrFile, "%s", &(accounts + i)->patronymic);
+		fseek(ptrFile, 1, SEEK_CUR);
 
+		(accounts + i)->isEmpty = false;
 		(accounts + i)->lasEdited.seconds = secondsSince(accounts + i);
 	}
 
@@ -302,6 +308,12 @@ void addAcc(Account *accounts, int *arrSize)
 	acc->isEmpty = false;
 
 	scanAcc(acc);
+
+	writeFile(accounts, *arrSize, acc->id);
+	FILE * ptrFile = fopen("size.txt", "w");
+	fprintf(ptrFile, "%d", *arrSize);
+
+	fclose(ptrFile);
 }
 
 bool clearAcc(Account *accounts, int arrSize, int id)
