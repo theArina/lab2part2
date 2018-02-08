@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 
 	Account *accounts = (Account *)malloc(arrSize * sizeof(Account));
 
-	readFileAccs(accounts, arrSize);
+	//readFileAccs(accounts, arrSize);
 	menu(accounts, &arrSize);
 
 	_getch();
